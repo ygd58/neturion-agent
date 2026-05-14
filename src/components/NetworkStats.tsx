@@ -28,8 +28,8 @@ export default function NetworkStats() {
         const fromBlock = latest > 9000n ? latest - 9000n : 0n
         const [mintLogs, jobLogs, completedLogs] = await Promise.all([
           client!.getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest }),
-          client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
-          client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
+          client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC] as any, fromBlock, toBlock: latest }),
+          client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC] as any, fromBlock, toBlock: latest }),
         ])
         const agents = mintLogs.filter(l => (l.args as any).from === "0x0000000000000000000000000000000000000000").length
         const jobs = jobLogs.length
