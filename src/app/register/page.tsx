@@ -210,28 +210,34 @@ export default function RegisterPage() {
             <Panel title="Metadata · base64(JSON)" accent={NT.cyan}
               action={<span style={{ color: NT.textMuted, fontSize: 10 }}>0x8004…BD9e</span>}
               style={{ flex: 1 }}>
-              <pre style={{ margin: 0, padding: "14px 16px",
-                fontFamily: "'Space Mono', monospace", fontSize: 11, lineHeight: 1.65,
-                color: NT.text, overflow: "auto", background: "#000814",
+              <div style={{ margin: 0, padding: "14px 16px",
+                fontFamily: "'Space Mono', monospace", fontSize: 11, lineHeight: 1.8,
+                color: NT.text, background: "#000814",
                 borderTop: `1px solid ${NT.border}` }}>
-                <span style={{ color: NT.textMuted }}>{"{"}</span>{"
-"}
-                {"  "}<span style={{ color: NT.cyan }}>"name"</span>: <span style={{ color: NT.green }}>"{form.name || "AGENT-NAME"}"</span>,{"
-"}
-                {"  "}<span style={{ color: NT.cyan }}>"role"</span>: <span style={{ color: NT.green }}>"{form.role}"</span>,{"
-"}
-                {"  "}<span style={{ color: NT.cyan }}>"capabilities"</span>: [{form.capabilities.map((c, i) => (
-                  <span key={c}>{"
-    "}<span style={{ color: NT.green }}>"{c}"</span>{i < form.capabilities.length - 1 ? "," : ""}</span>
-                ))}{form.capabilities.length > 0 ? "
-  " : ""}],{"
-"}
-                {"  "}<span style={{ color: NT.cyan }}>"version"</span>: <span style={{ color: NT.amber }}>"8004.1"</span>,{"
-"}
-                {"  "}<span style={{ color: NT.cyan }}>"owner"</span>: <span style={{ color: NT.green }}>"{address?.slice(0,10)}…{address?.slice(-6)}"</span>{"
-"}
-                <span style={{ color: NT.textMuted }}>{"}"}</span>
-              </pre>
+                <div><span style={{ color: NT.textMuted }}>{"{"}</span></div>
+                <div style={{ paddingLeft: 16 }}>
+                  <span style={{ color: NT.cyan }}>"name"</span>: <span style={{ color: NT.green }}>"{form.name || "AGENT-NAME"}"</span>,
+                </div>
+                <div style={{ paddingLeft: 16 }}>
+                  <span style={{ color: NT.cyan }}>"role"</span>: <span style={{ color: NT.green }}>"{form.role}"</span>,
+                </div>
+                <div style={{ paddingLeft: 16 }}>
+                  <span style={{ color: NT.cyan }}>"capabilities"</span>: [
+                  {form.capabilities.map((c, i) => (
+                    <div key={c} style={{ paddingLeft: 16 }}>
+                      <span style={{ color: NT.green }}>"{c}"</span>{i < form.capabilities.length - 1 ? "," : ""}
+                    </div>
+                  ))}
+                  ],
+                </div>
+                <div style={{ paddingLeft: 16 }}>
+                  <span style={{ color: NT.cyan }}>"version"</span>: <span style={{ color: NT.amber }}>"8004.1"</span>,
+                </div>
+                <div style={{ paddingLeft: 16 }}>
+                  <span style={{ color: NT.cyan }}>"owner"</span>: <span style={{ color: NT.green }}>"{address ? address.slice(0,10) + "..." + address.slice(-6) : "0x..."}"</span>
+                </div>
+                <div><span style={{ color: NT.textMuted }}>{"}"}</span></div>
+              </div>
               <div style={{ padding: "8px 14px", borderTop: `1px solid ${NT.border}`,
                 display: "flex", justifyContent: "space-between",
                 fontSize: 10, color: NT.textMuted, letterSpacing: "0.12em" }}>
