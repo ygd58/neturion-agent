@@ -28,9 +28,9 @@ export default function JobsPage() {
       const fromBlock = latest > 9000n ? latest - 9000n : 0n
 
       const [createdLogs, completedLogs, fundedLogs] = await Promise.all([
-        client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC] as any, fromBlock, toBlock: latest }),
-        client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC] as any, fromBlock, toBlock: latest }),
-        client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_FUNDED_TOPIC] as any, fromBlock, toBlock: latest }),
+        (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
+        (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
+        (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_FUNDED_TOPIC], fromBlock, toBlock: latest }),
       ])
 
       const completedIds = new Set(completedLogs.map(l => l.topics[1]))

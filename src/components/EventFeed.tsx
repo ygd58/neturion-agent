@@ -22,7 +22,7 @@ export default function EventFeed() {
     const unwatch = client.watchBlocks({
       onBlock: async (block) => {
         if (stopped) return
-        const logs = await client.getLogs({
+        const logs = await (client as any).getLogs({
           address: CONTRACTS.AGENTIC_COMMERCE,
           fromBlock: block.number,
           toBlock: block.number,
