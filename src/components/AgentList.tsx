@@ -1,22 +1,16 @@
 "use client"
-
 import { usePublicClient } from "wagmi"
 import { useEffect, useState } from "react"
 import { CONTRACTS, IDENTITY_ABI, REPUTATION_ABI } from "@/lib/arc"
+import { NT } from "@/lib/tokens"
 
 type Agent = {
-  id: bigint
-  owner: string
-  name: string
-  role: string
-  capabilities: string[]
-  repScore: number
-  repCount: number
+  id: bigint; owner: string; name: string; role: string
+  capabilities: string[]; repScore: number; repCount: number
 }
 
 const TRANSFER_EVENT = {
-  type: "event" as const,
-  name: "Transfer",
+  type: "event" as const, name: "Transfer",
   inputs: [
     { type: "address" as const, name: "from", indexed: true },
     { type: "address" as const, name: "to", indexed: true },
@@ -24,16 +18,17 @@ const TRANSFER_EVENT = {
   ],
 }
 
-const roleColors: Record<string, string> = {
-  orchestrator: "bg-purple-900 text-purple-300",
-  worker: "bg-cyan-900 text-cyan-300",
-  evaluator: "bg-yellow-900 text-yellow-300",
+const roleColors: Record<string, { bg: string, text: string }> = {
+  orchestrator: { bg: "rgba(0,255,136,0.08)", text: NT.green },
+  worker:       { bg: "rgba(0,212,255,0.08)", text: NT.cyan },
+  evaluator:    { bg: "rgba(255,181,71,0.08)", text: NT.amber },
 }
 
 export default function AgentList() {
   const client = usePublicClient()
   const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState("all")
 
   useEffect(() => {
     if (!client) return
@@ -41,26 +36,28 @@ export default function AgentList() {
       try {
         const latest = await (client as any).getBlockNumber()
         const fromBlock = latest > 9000n ? latest - 9000n : 0n
-        const logs = await (client as any).getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest })
-        const mintLogs = logs.filter(l => (l.args as any).from === "0x0000000000000000000000000000000000000000")
+        const logs = await (client as any).getLogs({
+          address: CONTRACTS.IDENTITY_REGISTRY,
+          event: TRANSFER_EVENT, fromBlock, toBlock: latest,
+        })
+        const mints = logs.filter((l: any) => l.args?.from === "0x0000000000000000000000000000000000000000")
         const loaded: Agent[] = []
-
-        for (const log of mintLogs.slice(-20)) {
-          const tokenId = (log.args as any).tokenId as bigint
+        for (const log of mints.slice(-20)) {
+          const tokenId = log.args?.tokenId as bigint
           if (!tokenId) continue
           try {
             const [owner, uri] = await Promise.all([
-              (client as any).readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "ownerOf", args: [tokenId] }) as Promise<string>,
-              (client as any).readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "tokenURI", args: [tokenId] }) as Promise<string>,
+              (client as any).readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "ownerOf", args: [tokenId] }),
+              (client as any).readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "tokenURI", args: [tokenId] }),
             ])
             let meta: any = {}
-            try { meta = JSON.parse(Buffer.from(uri.replace("data:application/json;base64,", ""), "base64").toString()) } catch {}
+            try { meta = JSON.parse(Buffer.from((uri as string).replace("data:application/json;base64,", ""), "base64").toString()) } catch {}
             let repScore = 0, repCount = 0
             try {
               const rep = await (client as any).readContract({ address: CONTRACTS.REPUTATION_REGISTRY, abi: REPUTATION_ABI, functionName: "getReputation", args: [tokenId] }) as [bigint, bigint]
               repScore = Number(rep[0]); repCount = Number(rep[1])
             } catch {}
-            loaded.push({ id: tokenId, owner, name: meta.name ?? "Unknown", role: meta.role ?? "unknown", capabilities: meta.capabilities ?? [], repScore, repCount })
+            loaded.push({ id: tokenId, owner: owner as string, name: meta.name ?? "UNKNOWN", role: meta.role ?? "worker", capabilities: meta.capabilities ?? [], repScore, repCount })
           } catch {}
         }
         setAgents(loaded.reverse())
@@ -70,49 +67,97 @@ export default function AgentList() {
     load()
   }, [client])
 
+  const filtered = filter === "all" ? agents : agents.filter(a => a.role === filter)
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-white">Registered Agents</h2>
-        <span className="text-xs text-gray-500">Last 9000 blocks</span>
-      </div>
-      {loading ? (
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-4 animate-pulse h-20" />)}
-        </div>
-      ) : agents.length === 0 ? (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center text-gray-500">No agents found</div>
-      ) : (
-        <div className="space-y-3">
-          {agents.map((agent) => (
-            <div key={agent.id.toString()} className="bg-gray-900 border border-gray-800 rounded-xl p-4 hover:border-gray-600 transition-colors">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-cyan-400 font-mono text-sm">#{agent.id.toString()}</span>
-                    <span className={"text-xs px-2 py-0.5 rounded-full " + (roleColors[agent.role] ?? "bg-gray-800 text-gray-400")}>{agent.role}</span>
-                    <span className="font-medium text-white">{agent.name}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {agent.capabilities.map(cap => <span key={cap} className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded">{cap}</span>)}
-                  </div>
-                  <p className="text-xs text-gray-600 mt-1 font-mono">{agent.owner.slice(0,10)}...{agent.owner.slice(-6)}</p>
-                </div>
-                <div className="text-right ml-4">
-                  {agent.repCount > 0 ? (
-                    <>
-                      <p className={"font-bold " + (agent.repScore / agent.repCount >= 80 ? "text-green-400" : "text-yellow-400")}>
-                        {(agent.repScore / agent.repCount).toFixed(1)}
-                      </p>
-                      <p className="text-xs text-gray-500">{agent.repCount} reviews</p>
-                    </>
-                  ) : <p className="text-xs text-gray-600">No rep</p>}
-                </div>
-              </div>
-            </div>
+    <div style={{ border: `1px solid ${NT.border}`, background: NT.surface }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "10px 14px", borderBottom: `1px solid ${NT.border}`, background: NT.surface2,
+        flexWrap: "wrap", gap: 8 }}>
+        <span style={{ fontSize: 10, letterSpacing: "0.2em", color: NT.green, fontWeight: 700 }}>
+          ▸ REGISTERED AGENTS
+        </span>
+        <div style={{ display: "flex", gap: 4 }}>
+          {["all", "orchestrator", "worker", "evaluator"].map(r => (
+            <button key={r} onClick={() => setFilter(r)} style={{
+              padding: "3px 8px", fontSize: 9, letterSpacing: "0.1em", fontWeight: 700,
+              background: filter === r ? `${NT.green}14` : "transparent",
+              border: `1px solid ${filter === r ? NT.green + "66" : NT.border}`,
+              color: filter === r ? NT.green : NT.textMuted,
+              cursor: "pointer", fontFamily: "'Space Mono', monospace",
+            }}>
+              {r === "all" ? "ALL" : r === "orchestrator" ? "ORCH" : r === "worker" ? "WRKR" : "EVAL"}
+            </button>
           ))}
         </div>
-      )}
+      </div>
+
+      {loading ? (
+        Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} style={{ height: 56, borderBottom: `1px solid ${NT.border}`,
+            background: i % 2 ? "rgba(255,255,255,0.01)" : "transparent" }} />
+        ))
+      ) : filtered.length === 0 ? (
+        <div style={{ padding: 40, textAlign: "center", color: NT.textMuted, fontSize: 11 }}>
+          NO AGENTS FOUND
+        </div>
+      ) : filtered.map((agent, i) => {
+        const rc = roleColors[agent.role] ?? { bg: "transparent", text: NT.cyan }
+        const hasRep = agent.repCount > 0
+        const avg = hasRep ? agent.repScore / agent.repCount : 0
+        return (
+          <div key={agent.id.toString()} style={{
+            padding: "10px 16px", borderBottom: `1px solid ${NT.border}`,
+            background: i % 2 ? "rgba(255,255,255,0.01)" : "transparent",
+            position: "relative", display: "flex", alignItems: "center",
+            justifyContent: "space-between", gap: 8,
+          }}>
+            <span style={{ position: "absolute", left: 0, top: 8, bottom: 8,
+              width: 2, background: rc.text, opacity: 0.5 }} />
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6,
+                flexWrap: "wrap", marginBottom: 4 }}>
+                <span style={{ color: NT.textMuted, fontSize: 10,
+                  fontFamily: "'Space Mono', monospace" }}>
+                  #{agent.id.toString()}
+                </span>
+                <span style={{ fontSize: 9, padding: "1px 5px",
+                  background: rc.bg, color: rc.text,
+                  border: `1px solid ${rc.text}44`, letterSpacing: "0.1em" }}>
+                  {agent.role.slice(0, 4).toUpperCase()}
+                </span>
+                <span style={{ color: NT.text, fontSize: 12,
+                  fontFamily: "'Orbitron', monospace", fontWeight: 700 }}>
+                  {agent.name}
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                {agent.capabilities.slice(0, 4).map(cap => (
+                  <span key={cap} style={{ fontSize: 9, padding: "1px 5px",
+                    background: NT.surface2, color: NT.textMuted,
+                    border: `1px solid ${NT.border}` }}>
+                    {cap}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div style={{ textAlign: "right", flexShrink: 0 }}>
+              {hasRep ? (
+                <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 16,
+                  fontWeight: 700, color: avg >= 80 ? NT.green : NT.amber,
+                  lineHeight: 1 }}>
+                  {avg.toFixed(0)}
+                </div>
+              ) : (
+                <div style={{ color: NT.textMuted, fontSize: 10 }}>—</div>
+              )}
+              <a href={`https://testnet.arcscan.app/token/${CONTRACTS.IDENTITY_REGISTRY}/instance/${agent.id}`}
+                target="_blank" rel="noreferrer"
+                style={{ color: NT.textMuted, fontSize: 9, textDecoration: "none" }}>↗</a>
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
