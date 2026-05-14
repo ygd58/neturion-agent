@@ -42,11 +42,11 @@ export default function AgentList() {
         const latest = await client!.getBlockNumber()
         const fromBlock = latest > 9000n ? latest - 9000n : 0n
         const logs = await client!.getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest })
-        const mintLogs = logs.filter(l => l.args.from === "0x0000000000000000000000000000000000000000")
+        const mintLogs = logs.filter(l => (l.args as any).from === "0x0000000000000000000000000000000000000000")
         const loaded: Agent[] = []
 
         for (const log of mintLogs.slice(-20)) {
-          const tokenId = log.args.tokenId as bigint
+          const tokenId = (log.args as any).tokenId as bigint
           if (!tokenId) continue
           try {
             const [owner, uri] = await Promise.all([

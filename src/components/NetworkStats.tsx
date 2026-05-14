@@ -31,7 +31,7 @@ export default function NetworkStats() {
           client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
           client!.getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
         ])
-        const agents = mintLogs.filter(l => l.args.from === "0x0000000000000000000000000000000000000000").length
+        const agents = mintLogs.filter(l => (l.args as any).from === "0x0000000000000000000000000000000000000000").length
         const jobs = jobLogs.length
         const completed = completedLogs.length
         const rate = jobs > 0 ? ((completed / jobs) * 100).toFixed(0) + "%" : "N/A"
