@@ -24,10 +24,10 @@ export default function NetworkStats() {
     if (!client) return
     async function load() {
       try {
-        const latest = await client!.getBlockNumber()
+        const latest = await (client as any).getBlockNumber()
         const fromBlock = latest > 9000n ? latest - 9000n : 0n
         const [mintLogs, jobLogs, completedLogs] = await Promise.all([
-          client!.getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest }),
+          (client as any).getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest }),
           (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
           (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
         ])

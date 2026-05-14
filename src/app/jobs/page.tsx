@@ -24,7 +24,7 @@ export default function JobsPage() {
   useEffect(() => {
     if (!client) return
     async function load() {
-      const latest = await client!.getBlockNumber()
+      const latest = await (client as any).getBlockNumber()
       const fromBlock = latest > 9000n ? latest - 9000n : 0n
 
       const [createdLogs, completedLogs, fundedLogs] = await Promise.all([

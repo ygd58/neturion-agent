@@ -39,9 +39,9 @@ export default function AgentList() {
     if (!client) return
     async function load() {
       try {
-        const latest = await client!.getBlockNumber()
+        const latest = await (client as any).getBlockNumber()
         const fromBlock = latest > 9000n ? latest - 9000n : 0n
-        const logs = await client!.getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest })
+        const logs = await (client as any).getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest })
         const mintLogs = logs.filter(l => (l.args as any).from === "0x0000000000000000000000000000000000000000")
         const loaded: Agent[] = []
 
@@ -50,14 +50,14 @@ export default function AgentList() {
           if (!tokenId) continue
           try {
             const [owner, uri] = await Promise.all([
-              client!.readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "ownerOf", args: [tokenId] }) as Promise<string>,
-              client!.readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "tokenURI", args: [tokenId] }) as Promise<string>,
+              (client as any).readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "ownerOf", args: [tokenId] }) as Promise<string>,
+              (client as any).readContract({ address: CONTRACTS.IDENTITY_REGISTRY, abi: IDENTITY_ABI, functionName: "tokenURI", args: [tokenId] }) as Promise<string>,
             ])
             let meta: any = {}
             try { meta = JSON.parse(Buffer.from(uri.replace("data:application/json;base64,", ""), "base64").toString()) } catch {}
             let repScore = 0, repCount = 0
             try {
-              const rep = await client!.readContract({ address: CONTRACTS.REPUTATION_REGISTRY, abi: REPUTATION_ABI, functionName: "getReputation", args: [tokenId] }) as [bigint, bigint]
+              const rep = await (client as any).readContract({ address: CONTRACTS.REPUTATION_REGISTRY, abi: REPUTATION_ABI, functionName: "getReputation", args: [tokenId] }) as [bigint, bigint]
               repScore = Number(rep[0]); repCount = Number(rep[1])
             } catch {}
             loaded.push({ id: tokenId, owner, name: meta.name ?? "Unknown", role: meta.role ?? "unknown", capabilities: meta.capabilities ?? [], repScore, repCount })
