@@ -16,6 +16,9 @@ export const CONTRACTS = {
 } as const
 
 export const IDENTITY_ABI = [
+  { name: "register", type: "function", stateMutability: "nonpayable",
+    inputs: [{ name: "metadataURI", type: "string" }],
+    outputs: [{ name: "tokenId", type: "uint256" }] },
   { name: "ownerOf", type: "function", stateMutability: "view",
     inputs: [{ name: "tokenId", type: "uint256" }],
     outputs: [{ name: "", type: "address" }] },
