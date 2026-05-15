@@ -11,9 +11,7 @@ const JOB_CREATED_TOPIC = "0xb0f0239bfdd96453e24733e18bfc24b70d8fadf123dd9774735
 const JOB_COMPLETED_TOPIC = "0x0fd54bd364fa9e67f17b091aefe930932c09fe7651cf5ad02c71a418f3341444" as `0x${string}`
 const JOB_FUNDED_TOPIC = "0xe3fbcc1ea1bdc559ec7f0347efde7655e58b5f45a30b0e4470a583c3ef5496b3" as `0x${string}`
 
-type Job = {
-  id: string; status: string; client: string; provider: string; block: string; tx: string
-}
+type Job = { id: string; status: string; client: string; provider: string; block: string; tx: string }
 
 export default function JobsPage() {
   const client = usePublicClient()
@@ -26,31 +24,20 @@ export default function JobsPage() {
     async function load() {
       const latest = await (client as any).getBlockNumber()
       const fromBlock = latest > 9000n ? latest - 9000n : 0n
-
       const [createdLogs, completedLogs, fundedLogs] = await Promise.all([
-        (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
-        (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
-        (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_FUNDED_TOPIC], fromBlock, toBlock: latest }),
+        (client as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
+        (client as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
+        (client as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_FUNDED_TOPIC], fromBlock, toBlock: latest }),
       ])
-
-      const completedIds = new Set(completedLogs.map(l => l.topics[1]))
-      const fundedIds = new Set(fundedLogs.map(l => l.topics[1]))
-
-      const loaded: Job[] = createdLogs.map(log => {
+      const completedIds = new Set(completedLogs.map((l: any) => l.topics[1]))
+      const fundedIds = new Set(fundedLogs.map((l: any) => l.topics[1]))
+      const loaded: Job[] = createdLogs.map((log: any) => {
         const id = log.topics[1] ? BigInt(log.topics[1]).toString() : "?"
-        const t1 = log.topics[1] ?? ""
-        const status = completedIds.has(t1) ? "COMPLETED" : fundedIds.has(t1) ? "FUNDED" : "OPEN"
-        const client_addr = log.topics[2] ? "0x" + log.topics[2].slice(-40) : "?"
-        const provider_addr = log.topics[3] ? "0x" + log.topics[3].slice(-40) : "?"
-        return {
-          id, status,
-          client: client_addr.slice(0,8) + "…" + client_addr.slice(-6),
-          provider: provider_addr.slice(0,8) + "…" + provider_addr.slice(-6),
-          block: log.blockNumber?.toString() ?? "?",
-          tx: log.transactionHash?.slice(0,12) + "…" ?? "?",
-        }
+        const status = completedIds.has(log.topics[1]) ? "COMPLETED" : fundedIds.has(log.topics[1]) ? "FUNDED" : "OPEN"
+        const ca = log.topics[2] ? "0x" + log.topics[2].slice(-40) : "?"
+        const pa = log.topics[3] ? "0x" + log.topics[3].slice(-40) : "?"
+        return { id, status, client: ca.slice(0,8) + "…" + ca.slice(-6), provider: pa.slice(0,8) + "…" + pa.slice(-6), block: log.blockNumber?.toString() ?? "?", tx: (log.transactionHash?.slice(0,12) ?? "") + "…" }
       }).reverse()
-
       setJobs(loaded)
       setLoading(false)
     }
@@ -72,7 +59,7 @@ export default function JobsPage() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 0, marginBottom: 14 }}>
+      <div style={{ display: "flex", gap: 0, marginBottom: 14, flexWrap: "wrap" }}>
         {Object.entries(statusCounts).map(([k, v], i) => {
           const colorMap: Record<string, string> = { ALL: NT.green, OPEN: NT.cyan, FUNDED: NT.green, COMPLETED: NT.text }
           const c = colorMap[k] ?? NT.textDim
@@ -80,9 +67,9 @@ export default function JobsPage() {
             <button key={k} onClick={() => setFilter(k)} style={{
               padding: "10px 16px", cursor: "pointer",
               fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em",
-              background: filter === k ? `${c}14` : NT.surface,
-              border: `1px solid ${filter === k ? c + "66" : NT.border}`,
-              borderLeft: i === 0 ? `1px solid ${filter === k ? c + "66" : NT.border}` : "none",
+              background: filter === k ? (c + "14") : NT.surface,
+              border: "1px solid " + (filter === k ? c + "66" : NT.border),
+              borderLeft: i === 0 ? "1px solid " + (filter === k ? c + "66" : NT.border) : "none",
               color: filter === k ? c : NT.textMuted,
               display: "flex", alignItems: "center", gap: 8,
             }}>
@@ -92,7 +79,7 @@ export default function JobsPage() {
         })}
         <div style={{ flex: 1 }} />
         <Link href="/create" style={{
-          padding: "0 16px", background: `${NT.green}14`, border: `1px solid ${NT.green}66`,
+          padding: "0 16px", background: NT.green + "14", border: "1px solid " + NT.green + "66",
           color: NT.green, fontFamily: "'Space Mono', monospace", fontSize: 11,
           fontWeight: 700, letterSpacing: "0.14em", textDecoration: "none",
           display: "flex", alignItems: "center"
@@ -100,39 +87,37 @@ export default function JobsPage() {
       </div>
 
       <Panel accent={NT.cyan} style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", background: NT.surface2, borderBottom: `1px solid ${NT.borderHi}` }}>
+        <div style={{ display: "flex", background: NT.surface2, borderBottom: "1px solid " + NT.borderHi }}>
           <TH w="90px">JOB ID</TH>
           <TH w="130px">STATUS</TH>
-          <TH w="160px">CLIENT</TH>
-          <TH w="160px">PROVIDER</TH>
-          <TH w="130px">BLOCK</TH>
+          <TH w="150px">CLIENT</TH>
+          <TH w="150px">PROVIDER</TH>
+          <TH w="120px">BLOCK</TH>
           <TH>TX HASH</TH>
         </div>
         {loading ? (
           Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} style={{ height: 48, borderBottom: `1px solid ${NT.border}` }} />
+            <div key={i} style={{ height: 48, borderBottom: "1px solid " + NT.border }} />
           ))
         ) : filtered.map((j, i) => {
           const statusColors: Record<string, string> = { OPEN: NT.cyan, FUNDED: NT.green, COMPLETED: NT.text, SUBMITTED: NT.amber, CANCELLED: NT.danger }
           const c = statusColors[j.status] ?? NT.textDim
           return (
-            <Link key={j.id} href={"/jobs/" + j.id} style={{ display: "flex", borderBottom: `1px solid ${NT.border}`, position: "relative", textDecoration: "none", cursor: "pointer" }}
-              onMouseEnter={e => (e.currentTarget as any).style.background = "rgba(0,255,136,0.03)"}
-              onMouseLeave={e => (e.currentTarget as any).style.background = "transparent"}>
+            <Link key={j.id + i} href={"/jobs/" + j.id} style={{
+              display: "flex", borderBottom: "1px solid " + NT.border,
+              position: "relative", textDecoration: "none",
+            }}>
               <span style={{ position: "absolute", left: 0, top: 8, bottom: 8, width: 2, background: c, opacity: 0.5 }} />
-              <TD w="90px" style={{ fontWeight: 700, color: NT.text }}>
-                #{j.id}
-              </TD>
+              <TD w="90px" style={{ fontWeight: 700, color: NT.text }}>#{j.id}</TD>
               <TD w="130px"><StatusPill status={j.status} /></TD>
-              <TD w="160px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>{j.client}</TD>
-              <TD w="160px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>{j.provider}</TD>
-              <TD w="130px" style={{ color: NT.textMuted }}>#{j.block}</TD>
+              <TD w="150px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: NT.textDim }}>{j.client}</TD>
+              <TD w="150px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: NT.textDim }}>{j.provider}</TD>
+              <TD w="120px" style={{ color: NT.textMuted }}>#{j.block}</TD>
               <TD style={{ color: NT.textMuted, fontSize: 11 }}>{j.tx}</TD>
-            </div>
+            </Link>
           )
         })}
-        <div style={{ padding: "10px 14px", borderTop: `1px solid ${NT.border}`,
-          fontSize: 10, letterSpacing: "0.14em", color: NT.textMuted }}>
+        <div style={{ padding: "10px 14px", borderTop: "1px solid " + NT.border, fontSize: 10, letterSpacing: "0.14em", color: NT.textMuted }}>
           SHOWING {filtered.length} / {jobs.length} · LAST 9000 BLOCKS
         </div>
       </Panel>
