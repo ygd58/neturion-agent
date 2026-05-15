@@ -116,10 +116,11 @@ export default function JobsPage() {
           const statusColors: Record<string, string> = { OPEN: NT.cyan, FUNDED: NT.green, COMPLETED: NT.text, SUBMITTED: NT.amber, CANCELLED: NT.danger }
           const c = statusColors[j.status] ?? NT.textDim
           return (
-            <div key={j.id} style={{ display: "flex", borderBottom: `1px solid ${NT.border}`, position: "relative" }}>
+            <Link key={j.id} href={"/jobs/" + j.id} style={{ display: "flex", borderBottom: `1px solid ${NT.border}`, position: "relative", textDecoration: "none", cursor: "pointer" }}
+              onMouseEnter={e => (e.currentTarget as any).style.background = "rgba(0,255,136,0.03)"}
+              onMouseLeave={e => (e.currentTarget as any).style.background = "transparent"}>
               <span style={{ position: "absolute", left: 0, top: 8, bottom: 8, width: 2, background: c, opacity: 0.5 }} />
-              <TD w="90px" style={{ fontWeight: 700, color: NT.text, cursor: 'pointer' }}
-                onClick={() => window.location.href = '/jobs/' + j.id}>
+              <TD w="90px" style={{ fontWeight: 700, color: NT.text }}>
                 #{j.id}
               </TD>
               <TD w="130px"><StatusPill status={j.status} /></TD>
