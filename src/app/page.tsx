@@ -3,6 +3,7 @@ import PageShell from "@/components/PageShell"
 import NetworkStats from "@/components/NetworkStats"
 import AgentList from "@/components/AgentList"
 import EventFeed from "@/components/EventFeed"
+import MyAgents from "@/components/MyAgents"
 import NetworkMesh from "@/components/NetworkMesh"
 import { NT } from "@/lib/tokens"
 
@@ -69,6 +70,9 @@ export default function Dashboard() {
             </a>
           </div>
         </div>
+
+        {/* My Agents */}
+        <MyAgents />
 
         {/* Stats */}
         <NetworkStats />
