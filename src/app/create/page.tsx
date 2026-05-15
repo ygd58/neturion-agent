@@ -36,11 +36,11 @@ export default function CreatePage() {
       const budget = parseUSDC(form.budget)
       const expiredAt = BigInt(Math.floor(Date.now() / 1000) + parseInt(form.days) * 86400)
 
-      const h1 = await writeContractAsync({ address: CONTRACTS.USDC, abi: USDC_ABI, functionName: "approve", args: [CONTRACTS.AGENTIC_COMMERCE, budget] })
+      const h1 = await (writeContractAsync as any)({ address: CONTRACTS.USDC, abi: USDC_ABI, functionName: "approve", args: [CONTRACTS.AGENTIC_COMMERCE, budget] })
       setTxHashes(t => ({ ...t, approving: h1 }))
 
       setStatus("creating")
-      const h2 = await writeContractAsync({
+      const h2 = await (writeContractAsync as any)({
         address: CONTRACTS.AGENTIC_COMMERCE, abi: COMMERCE_ABI, functionName: "createJob",
         args: [form.provider as `0x${string}`, address, expiredAt, form.description, "0x0000000000000000000000000000000000000000"],
       })
@@ -50,11 +50,11 @@ export default function CreatePage() {
       setJobId(id)
 
       setStatus("budgeting")
-      const h3 = await writeContractAsync({ address: CONTRACTS.AGENTIC_COMMERCE, abi: COMMERCE_ABI, functionName: "setBudget", args: [BigInt(id), budget, "0x"] })
+      const h3 = await (writeContractAsync as any)({ address: CONTRACTS.AGENTIC_COMMERCE, abi: COMMERCE_ABI, functionName: "setBudget", args: [BigInt(id), budget, "0x"] })
       setTxHashes(t => ({ ...t, budgeting: h3 }))
 
       setStatus("funding")
-      const h4 = await writeContractAsync({ address: CONTRACTS.AGENTIC_COMMERCE, abi: COMMERCE_ABI, functionName: "fund", args: [BigInt(id), "0x"] })
+      const h4 = await (writeContractAsync as any)({ address: CONTRACTS.AGENTIC_COMMERCE, abi: COMMERCE_ABI, functionName: "fund", args: [BigInt(id), "0x"] })
       setTxHashes(t => ({ ...t, funding: h4 }))
 
       setStatus("done")

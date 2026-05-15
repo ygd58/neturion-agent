@@ -43,7 +43,7 @@ export default function RegisterPage() {
     if (!address || !client) return
     setStatus("pending"); setError("")
     try {
-      const hash = await writeContractAsync({
+      const hash = await (writeContractAsync as any)({
         address: CONTRACTS.IDENTITY_REGISTRY,
         abi: IDENTITY_ABI,
         functionName: "register",
