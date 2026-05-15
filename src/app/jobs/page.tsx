@@ -118,7 +118,10 @@ export default function JobsPage() {
           return (
             <div key={j.id} style={{ display: "flex", borderBottom: `1px solid ${NT.border}`, position: "relative" }}>
               <span style={{ position: "absolute", left: 0, top: 8, bottom: 8, width: 2, background: c, opacity: 0.5 }} />
-              <TD w="90px" style={{ fontWeight: 700, color: NT.text }}>#{j.id}</TD>
+              <TD w="90px" style={{ fontWeight: 700, color: NT.text, cursor: 'pointer' }}
+                onClick={() => window.location.href = '/jobs/' + j.id}>
+                #{j.id}
+              </TD>
               <TD w="130px"><StatusPill status={j.status} /></TD>
               <TD w="160px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>{j.client}</TD>
               <TD w="160px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>{j.provider}</TD>
