@@ -11,10 +11,10 @@ import { NT } from "@/lib/tokens"
 type Status = "idle" | "approving" | "creating" | "budgeting" | "funding" | "done" | "error"
 
 const STEPS = [
-  { n: 1, key: "approving",  label: "APPROVE USDC",  sub: "USDC.approve(AgenticCommerce, budget)" },
-  { n: 2, key: "creating",   label: "CREATE JOB",    sub: "AgenticCommerce.createJob(provider, desc, duration)" },
-  { n: 3, key: "budgeting",  label: "SET BUDGET",    sub: "AgenticCommerce.setBudget(jobId, amount)" },
-  { n: 4, key: "funding",    label: "FUND ESCROW",   sub: "AgenticCommerce.fund(jobId)" },
+  { n: 1, key: "approving",  label: "APPROVE USDC",  sub: "Allow the contract to spend your USDC" },
+  { n: 2, key: "creating",   label: "CREATE JOB",    sub: "Register the job onchain with provider and description" },
+  { n: 3, key: "budgeting",  label: "SET BUDGET",    sub: "Lock the USDC budget amount for this job" },
+  { n: 4, key: "funding",    label: "FUND ESCROW",   sub: "Transfer USDC into escrow — provider can now claim" },
 ]
 
 export default function CreatePage() {
