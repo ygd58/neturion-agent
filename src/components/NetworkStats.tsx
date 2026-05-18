@@ -1,8 +1,8 @@
 "use client"
-
 import { usePublicClient } from "wagmi"
 import { useEffect, useState } from "react"
 import { CONTRACTS } from "@/lib/arc"
+import { NT } from "@/lib/tokens"
 
 const JOB_CREATED_TOPIC = "0xb0f0239bfdd96453e24733e18bfc24b70d8fadf123dd977473518dd577ee79b9" as `0x${string}`
 const JOB_COMPLETED_TOPIC = "0x0fd54bd364fa9e67f17b091aefe930932c09fe7651cf5ad02c71a418f3341444" as `0x${string}`
@@ -28,10 +28,10 @@ export default function NetworkStats() {
         const fromBlock = latest > 9000n ? latest - 9000n : 0n
         const [mintLogs, jobLogs, completedLogs] = await Promise.all([
           (client as any).getLogs({ address: CONTRACTS.IDENTITY_REGISTRY, event: TRANSFER_EVENT, fromBlock, toBlock: latest }),
-          (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
-          (client! as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
+          (client as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_CREATED_TOPIC], fromBlock, toBlock: latest }),
+          (client as any).getLogs({ address: CONTRACTS.AGENTIC_COMMERCE, topics: [JOB_COMPLETED_TOPIC], fromBlock, toBlock: latest }),
         ])
-        const agents = mintLogs.filter(l => (l.args as any).from === "0x0000000000000000000000000000000000000000").length
+        const agents = mintLogs.filter((l: any) => l.args?.from === "0x0000000000000000000000000000000000000000").length
         const jobs = jobLogs.length
         const completed = completedLogs.length
         const rate = jobs > 0 ? ((completed / jobs) * 100).toFixed(0) + "%" : "N/A"
@@ -40,32 +40,41 @@ export default function NetworkStats() {
       setLoading(false)
     }
     load()
-    const interval = setInterval(load, 10000)
+    const interval = setInterval(load, 15000)
     return () => clearInterval(interval)
   }, [client])
 
   const cards = [
-    { label: "AGENTS", value: stats.agents, color: "#00ff88", prefix: "" },
-    { label: "JOBS CREATED", value: stats.jobs, color: "#00ffff", prefix: "" },
-    { label: "COMPLETED", value: stats.completed, color: "#00ff88", prefix: "" },
-    { label: "SUCCESS RATE", value: stats.rate, color: stats.rate === "100%" ? "#00ff88" : "#ffaa00", prefix: "" },
-    { label: "BLOCK HEIGHT", value: stats.block.toLocaleString(), color: "#004433", prefix: "#" },
+    { label: "AGENTS", value: stats.agents, color: NT.green },
+    { label: "JOBS CREATED", value: stats.jobs, color: NT.cyan },
+    { label: "COMPLETED", value: stats.completed, color: NT.green },
+    { label: "SUCCESS RATE", value: stats.rate, color: NT.green },
+    { label: "BLOCK", value: "#" + stats.block.toLocaleString(), color: NT.textMuted },
   ]
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "8px" }}>
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(2, 1fr)",
+      gap: 8,
+    }}>
       {cards.map((card, i) => (
-        <div key={card.label} className="terminal-border card-hover" style={{ padding: "12px 16px", background: "rgba(0,255,136,0.01)" }}>
-          <p style={{ color: "#004433", fontSize: "0.55rem", letterSpacing: "0.2em", marginBottom: "8px" }}>{card.label}</p>
-          <p style={{ 
-            color: loading ? "#002211" : card.color, 
-            fontSize: i === 4 ? "0.9rem" : "1.5rem",
-            fontFamily: "var(--font-display)",
-            letterSpacing: "0.05em",
-            textShadow: loading ? "none" : "0 0 10px " + card.color + "44",
-            transition: "all 0.3s"
+        <div key={card.label} style={{
+          padding: "12px 14px",
+          border: `1px solid ${NT.border}`,
+          background: NT.surface,
+          gridColumn: i === 4 ? "1 / -1" : "auto",
+        }}>
+          <p style={{ fontSize: 9, letterSpacing: "0.2em", color: NT.textMuted,
+            textTransform: "uppercase", marginBottom: 6 }}>{card.label}</p>
+          <p style={{
+            color: loading ? NT.border : card.color,
+            fontSize: i === 4 ? 14 : 22,
+            fontFamily: "'Orbitron', monospace",
+            fontWeight: 700, letterSpacing: "0.04em",
+            textShadow: loading ? "none" : `0 0 10px ${card.color}44`,
           }}>
-            {loading ? "..." : (card.prefix + card.value)}
+            {loading ? "..." : card.value}
           </p>
         </div>
       ))}

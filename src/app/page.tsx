@@ -78,7 +78,7 @@ export default function Dashboard() {
         <NetworkStats />
 
         {/* Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 360px",
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)",
           gap: 14, marginTop: 14 }}>
           <AgentList />
           <EventFeed />
