@@ -116,26 +116,38 @@ export default function CreatePage() {
                     onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                     style={{ ...inputStyle, height: 100, resize: "none" }} required />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <div>
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                     <label style={labelStyle}>▸ Budget</label>
-                    <div style={{ display: "flex", background: NT.surface2, border: `1px solid ${NT.borderHi}` }}>
-                      <input type="number" step="0.1" min="0.1" value={form.budget}
-                        onChange={e => setForm(f => ({ ...f, budget: e.target.value }))}
-                        style={{ ...inputStyle, border: "none", flex: 1 }} />
-                      <span style={{ padding: "11px 12px", borderLeft: `1px solid ${NT.border}`,
-                        color: NT.textDim, fontSize: 11 }}>USDC</span>
-                    </div>
+                    <span style={{ fontFamily: "'Orbitron', monospace", fontSize: 16,
+                      fontWeight: 700, color: NT.green }}>{form.budget} USDC</span>
                   </div>
-                  <div>
+                  <input type="range" min="0.5" max="100" step="0.5"
+                    value={form.budget}
+                    onChange={e => setForm(f => ({ ...f, budget: e.target.value }))}
+                    style={{ width: "100%", accentColor: NT.green, cursor: "pointer", height: 4 }} />
+                  <div style={{ display: "flex", justifyContent: "space-between",
+                    fontSize: 9, color: NT.textMuted, letterSpacing: "0.1em", marginTop: 4 }}>
+                    <span>0.5 USDC</span>
+                    <span>50 USDC</span>
+                    <span>100 USDC</span>
+                  </div>
+                </div>
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                     <label style={labelStyle}>▸ Duration</label>
-                    <div style={{ display: "flex", background: NT.surface2, border: `1px solid ${NT.borderHi}` }}>
-                      <input type="number" min="1" value={form.days}
-                        onChange={e => setForm(f => ({ ...f, days: e.target.value }))}
-                        style={{ ...inputStyle, border: "none", flex: 1 }} />
-                      <span style={{ padding: "11px 12px", borderLeft: `1px solid ${NT.border}`,
-                        color: NT.textDim, fontSize: 11 }}>DAYS</span>
-                    </div>
+                    <span style={{ fontFamily: "'Orbitron', monospace", fontSize: 16,
+                      fontWeight: 700, color: NT.cyan }}>{form.days} DAYS</span>
+                  </div>
+                  <input type="range" min="1" max="30" step="1"
+                    value={form.days}
+                    onChange={e => setForm(f => ({ ...f, days: e.target.value }))}
+                    style={{ width: "100%", accentColor: NT.cyan, cursor: "pointer", height: 4 }} />
+                  <div style={{ display: "flex", justifyContent: "space-between",
+                    fontSize: 9, color: NT.textMuted, letterSpacing: "0.1em", marginTop: 4 }}>
+                    <span>1 DAY</span>
+                    <span>15 DAYS</span>
+                    <span>30 DAYS</span>
                   </div>
                 </div>
 
