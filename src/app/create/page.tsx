@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useAccount, useWriteContract, usePublicClient } from "wagmi"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import PageShell from "@/components/PageShell"
+import AgentPicker from "@/components/AgentPicker"
 import { Panel } from "@/components/atoms"
 import { parseUSDC, CONTRACTS, COMMERCE_ABI, USDC_ABI } from "@/lib/arc"
 import { NT } from "@/lib/tokens"
@@ -100,10 +101,14 @@ export default function CreatePage() {
             <form onSubmit={handleSubmit}>
               <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 16 }}>
                 <div>
-                  <label style={labelStyle}>▸ Provider Address</label>
-                  <input type="text" placeholder="0x..." value={form.provider}
-                    onChange={e => setForm(f => ({ ...f, provider: e.target.value }))}
-                    style={inputStyle} required />
+                  <label style={labelStyle}>▸ Provider Agent</label>
+                  <AgentPicker onSelect={(addr, name) => setForm(f => ({ ...f, provider: addr }))} />
+                  <div style={{ marginTop: 6 }}>
+                    <label style={{ ...labelStyle, marginBottom: 4 }}>OR PASTE ADDRESS</label>
+                    <input type="text" placeholder="0x..." value={form.provider}
+                      onChange={e => setForm(f => ({ ...f, provider: e.target.value }))}
+                      style={inputStyle} />
+                  </div>
                 </div>
                 <div>
                   <label style={labelStyle}>▸ Task Description</label>
