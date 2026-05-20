@@ -212,7 +212,7 @@ export default function RegisterPage() {
               style={{ flex: 1 }}>
               <div style={{ margin: 0, padding: "14px 16px",
                 fontFamily: "'Space Mono', monospace", fontSize: 11, lineHeight: 1.8,
-                color: NT.text, background: "#000814",
+                color: NT.text, background: "var(--bg)",
                 borderTop: `1px solid ${NT.border}` }}>
                 <div><span style={{ color: NT.textMuted }}>{"{"}</span></div>
                 <div style={{ paddingLeft: 16 }}>

@@ -40,7 +40,7 @@ export default function CreateJob() {
   }
 
   const inputStyle = {
-    width: "100%", background: "#000a05", border: "1px solid #004433", color: "#00ff88",
+    width: "100%", background: "var(--bg)", border: "1px solid #004433", color: "var(--green)",
     padding: "8px 12px", fontSize: "0.75rem", fontFamily: "var(--font-mono)",
     outline: "none", letterSpacing: "0.05em",
   }
@@ -49,7 +49,7 @@ export default function CreateJob() {
 
   return (
     <div className="terminal-border" style={{ padding: "20px", background: "rgba(0,255,136,0.01)" }}>
-      <p style={{ color: "#00ff88", fontSize: "0.65rem", letterSpacing: "0.2em", marginBottom: "4px" }}>{">"} CREATE JOB</p>
+      <p style={{ color: "var(--green)", fontSize: "0.65rem", letterSpacing: "0.2em", marginBottom: "4px" }}>{">"} CREATE JOB</p>
       <p style={{ color: "#003322", fontSize: "0.55rem", letterSpacing: "0.1em", marginBottom: "20px" }}>ERC-8183 // USDC ESCROW</p>
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -85,7 +85,7 @@ export default function CreateJob() {
             padding: "10px 12px", fontSize: "0.65rem", letterSpacing: "0.1em",
             background: status === "done" ? "rgba(0,255,136,0.05)" : status === "error" ? "rgba(255,50,50,0.05)" : "rgba(0,255,136,0.02)",
             border: "1px solid " + (status === "done" ? "#004433" : status === "error" ? "#440000" : "#002211"),
-            color: status === "done" ? "#00ff88" : status === "error" ? "#ff4444" : "#006633",
+            color: status === "done" ? "var(--green)" : status === "error" ? "#ff4444" : "#006633",
             display: "flex", alignItems: "center", gap: "8px"
           }}>
             {status !== "done" && status !== "error" && (
@@ -101,8 +101,8 @@ export default function CreateJob() {
         <button type="submit" disabled={status !== "idle" && status !== "error" && status !== "done"}
           style={{
             background: status === "idle" || status === "error" || status === "done" ? "rgba(0,255,136,0.1)" : "rgba(0,255,136,0.03)",
-            border: "1px solid " + (status === "idle" || status === "error" || status === "done" ? "#00ff88" : "#002211"),
-            color: status === "idle" || status === "error" || status === "done" ? "#00ff88" : "#004433",
+            border: "1px solid " + (status === "idle" || status === "error" || status === "done" ? "var(--green)" : "#002211"),
+            color: status === "idle" || status === "error" || status === "done" ? "var(--green)" : "#004433",
             padding: "10px", fontSize: "0.65rem", letterSpacing: "0.2em",
             cursor: "pointer", width: "100%", fontFamily: "var(--font-mono)",
             transition: "all 0.2s",

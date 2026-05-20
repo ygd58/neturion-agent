@@ -257,7 +257,7 @@ export default function CreatePage() {
             })}
 
             <div style={{ padding: 14, borderTop: `1px solid ${NT.border}`,
-              background: "#000814", fontFamily: "'Space Mono', monospace",
+              background: "var(--bg)", fontFamily: "'Space Mono', monospace",
               fontSize: 10.5, lineHeight: 1.6 }}>
               <div style={{ color: NT.textMuted }}>$ neturion-tx --network arc-testnet</div>
               <div style={{ color: NT.cyan }}>⟶ rpc.testnet.arc.network:443</div>

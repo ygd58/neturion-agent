@@ -6,7 +6,7 @@ export default function Confetti({ trigger }: { trigger: boolean }) {
   useEffect(() => {
     if (!trigger) return
 
-    const colors = ["#00ff88", "#00d4ff", "#ffb547"]
+    const colors = ["var(--green)", "var(--cyan)", "var(--amber)"]
 
     confetti({
       particleCount: 80,

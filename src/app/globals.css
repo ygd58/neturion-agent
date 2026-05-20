@@ -1,74 +1,68 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Space+Mono:wght@400;700&display=swap");
 
-:root {
-  --bg: #050810;
-  --surface: #0a1018;
-  --surface2: #0d1422;
-  --border: #1a2638;
-  --border-hi: #2a3a52;
-  --text: #e6edf7;
-  --text-dim: #8593ad;
-  --text-muted: #525d75;
-  --green: #00ff88;
-  --cyan: #00d4ff;
-  --amber: #ffb547;
-  --danger: #ff3b6b;
-}
-
-[data-theme="light"] {
-  --bg: #f5f7f5;
-  --surface: #ffffff;
-  --surface2: #eef2ee;
-  --border: #c8d8c8;
-  --border-hi: #a8c0a8;
-  --text: #0a1a0a;
-  --text-dim: #3a5a3a;
-  --text-muted: #6a8a6a;
-  --green: #007744;
-  --cyan: #005588;
-  --amber: #885500;
-  --danger: #cc2244;
-}
-
-[data-theme="light"] body {
-  background: var(--bg) !important;
-  color: var(--text) !important;
-}
-
-[data-theme="light"] nav {
-  background: var(--surface) !important;
-  border-color: var(--border) !important;
-}
-
-[data-theme="light"] input,
-[data-theme="light"] textarea,
-[data-theme="light"] button {
-  color: var(--text);
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Dark mode (default) */
+:root {
+  --bg:         #050810;
+  --surface:    #0a1018;
+  --surface2:   #0d1422;
+  --surface3:   #111a2d;
+  --border:     #1a2638;
+  --border-hi:  #2a3a52;
+  --text:       #e6edf7;
+  --text-dim:   #8593ad;
+  --text-muted: #525d75;
+  --green:      #00ff88;
+  --green-dim:  #0a6b3f;
+  --cyan:       #00d4ff;
+  --cyan-dim:   #0a5d7a;
+  --amber:      #ffb547;
+  --amber-dim:  #6b4818;
+  --danger:     #ff3b6b;
+}
 
+/* Light mode */
+[data-theme="light"] {
+  --bg:         #f4f7f4;
+  --surface:    #ffffff;
+  --surface2:   #edf2ed;
+  --surface3:   #e4ece4;
+  --border:     #c0d4c0;
+  --border-hi:  #a0c0a0;
+  --text:       #0a180a;
+  --text-dim:   #2a4a2a;
+  --text-muted: #4a6a4a;
+  --green:      #006633;
+  --green-dim:  #cceecc;
+  --cyan:       #004488;
+  --cyan-dim:   #cce0ff;
+  --amber:      #774400;
+  --amber-dim:  #ffeecc;
+  --danger:     #aa1133;
+}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: 'Space Mono', ui-monospace, monospace;
-  background: #050810;
-  color: #e6edf7;
+html, body {
+  font-family: "Space Mono", ui-monospace, monospace;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse at 70% 40%, rgba(0,212,255,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse at 20% 80%, rgba(0,255,136,0.03) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
+a { color: inherit; }
+
+input, textarea, button, select {
+  font-family: inherit;
+  color: var(--text);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
 }
 
 @keyframes pulse-dot {
@@ -91,4 +85,3 @@ body::after {
 }
 
 .fade-in { animation: fadeSlideIn 0.3s ease forwards; }
-

@@ -19,8 +19,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.body.style.background = "#f0f4f0"
       document.body.style.color = "#0a200a"
     } else {
-      document.body.style.background = "#050810"
-      document.body.style.color = "#e6edf7"
+      document.body.style.background = "var(--bg)"
+      document.body.style.color = "var(--text)"
     }
   }, [theme])
 
@@ -44,7 +44,7 @@ export function ThemeToggle() {
   return (
     <button onClick={toggle} style={{
       background: "transparent", border: "1px solid #1a2638",
-      color: theme === "dark" ? "#00ff88" : "#333",
+      color: theme === "dark" ? "var(--green)" : "#333",
       cursor: "pointer", padding: "6px 10px",
       fontFamily: "'Space Mono', monospace",
       fontSize: 12, letterSpacing: "0.1em",
