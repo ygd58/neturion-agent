@@ -44,3 +44,19 @@ body::after {
 }
 
 .fade-in { animation: fadeSlideIn 0.3s ease forwards; }
+
+/* Light mode */
+[data-theme="light"] {
+  background: #f0f4f0 !important;
+  color: #0a1a0a !important;
+}
+
+[data-theme="light"] nav {
+  background: #e8f0e8 !important;
+  border-color: #c0d0c0 !important;
+}
+
+[data-theme="light"] body {
+  background: #f0f4f0;
+  color: #0a1a0a;
+}

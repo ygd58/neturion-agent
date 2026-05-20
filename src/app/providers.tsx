@@ -1,5 +1,6 @@
 "use client"
 import AddArcNetwork from "@/components/AddArcNetwork"
+import { ThemeProvider } from "@/components/ThemeToggle"
 
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { WagmiProvider } from "wagmi"
@@ -15,7 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <AddArcNetwork />
-          {children}
+          <ThemeProvider>{children}</ThemeProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
