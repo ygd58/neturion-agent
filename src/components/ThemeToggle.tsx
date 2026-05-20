@@ -12,6 +12,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (saved) setTheme(saved)
   }, [])
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme)
+    if (theme === "light") {
+      document.body.style.background = "#f0f4f0"
+      document.body.style.color = "#0a200a"
+    } else {
+      document.body.style.background = "#050810"
+      document.body.style.color = "#e6edf7"
+    }
+  }, [theme])
+
   function toggle() {
     const next = theme === "dark" ? "light" : "dark"
     setTheme(next)
@@ -20,9 +31,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggle }}>
-      <div data-theme={theme} style={{ minHeight: "100vh" }}>
-        {children}
-      </div>
+      {children}
     </ThemeContext.Provider>
   )
 }

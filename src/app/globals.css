@@ -60,3 +60,20 @@ body::after {
   background: #f0f4f0;
   color: #0a1a0a;
 }
+
+[data-theme="light"] body,
+html[data-theme="light"] {
+  background: #f0f4f0 !important;
+  color: #0a200a !important;
+}
+
+[data-theme="light"] nav,
+[data-theme="light"] header {
+  background: #deeade !important;
+  border-color: #a0c0a0 !important;
+}
+
+[data-theme="light"] div,
+[data-theme="light"] main {
+  color: #0a200a;
+}
