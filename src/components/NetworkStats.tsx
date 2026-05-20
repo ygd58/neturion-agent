@@ -49,7 +49,7 @@ export default function NetworkStats() {
     { label: "JOBS CREATED", value: stats.jobs, color: "var(--cyan)" },
     { label: "COMPLETED", value: stats.completed, color: "var(--green)" },
     { label: "SUCCESS RATE", value: stats.rate, color: "var(--green)" },
-    { label: "BLOCK", value: "#" + stats.block.toLocaleString(), color: "var(--text)"Muted },
+    { label: "BLOCK", value: "#" + stats.block.toLocaleString(), color: "var(--text-muted)" },
   ]
 
   return (
@@ -65,7 +65,7 @@ export default function NetworkStats() {
           background: "var(--surface)",
           gridColumn: i === 4 ? "1 / -1" : "auto",
         }}>
-          <p style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text)"Muted,
+          <p style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)",
             textTransform: "uppercase", marginBottom: 6 }}>{card.label}</p>
           <p style={{
             color: loading ? NT.border : card.color,
