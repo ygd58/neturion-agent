@@ -14,6 +14,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme)
+    document.documentElement.style.setProperty("color-scheme", theme)
     if (theme === "light") {
       document.body.style.background = "#f0f4f0"
       document.body.style.color = "#0a200a"

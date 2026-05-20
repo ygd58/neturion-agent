@@ -1,3 +1,50 @@
+
+:root {
+  --bg: #050810;
+  --surface: #0a1018;
+  --surface2: #0d1422;
+  --border: #1a2638;
+  --border-hi: #2a3a52;
+  --text: #e6edf7;
+  --text-dim: #8593ad;
+  --text-muted: #525d75;
+  --green: #00ff88;
+  --cyan: #00d4ff;
+  --amber: #ffb547;
+  --danger: #ff3b6b;
+}
+
+[data-theme="light"] {
+  --bg: #f5f7f5;
+  --surface: #ffffff;
+  --surface2: #eef2ee;
+  --border: #c8d8c8;
+  --border-hi: #a8c0a8;
+  --text: #0a1a0a;
+  --text-dim: #3a5a3a;
+  --text-muted: #6a8a6a;
+  --green: #007744;
+  --cyan: #005588;
+  --amber: #885500;
+  --danger: #cc2244;
+}
+
+[data-theme="light"] body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="light"] nav {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] button {
+  color: var(--text);
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
@@ -45,35 +92,3 @@ body::after {
 
 .fade-in { animation: fadeSlideIn 0.3s ease forwards; }
 
-/* Light mode */
-[data-theme="light"] {
-  background: #f0f4f0 !important;
-  color: #0a1a0a !important;
-}
-
-[data-theme="light"] nav {
-  background: #e8f0e8 !important;
-  border-color: #c0d0c0 !important;
-}
-
-[data-theme="light"] body {
-  background: #f0f4f0;
-  color: #0a1a0a;
-}
-
-[data-theme="light"] body,
-html[data-theme="light"] {
-  background: #f0f4f0 !important;
-  color: #0a200a !important;
-}
-
-[data-theme="light"] nav,
-[data-theme="light"] header {
-  background: #deeade !important;
-  border-color: #a0c0a0 !important;
-}
-
-[data-theme="light"] div,
-[data-theme="light"] main {
-  color: #0a200a;
-}

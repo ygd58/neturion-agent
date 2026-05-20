@@ -45,11 +45,11 @@ export default function NetworkStats() {
   }, [client])
 
   const cards = [
-    { label: "AGENTS", value: stats.agents, color: NT.green },
-    { label: "JOBS CREATED", value: stats.jobs, color: NT.cyan },
-    { label: "COMPLETED", value: stats.completed, color: NT.green },
-    { label: "SUCCESS RATE", value: stats.rate, color: NT.green },
-    { label: "BLOCK", value: "#" + stats.block.toLocaleString(), color: NT.textMuted },
+    { label: "AGENTS", value: stats.agents, color: "var(--green)" },
+    { label: "JOBS CREATED", value: stats.jobs, color: "var(--cyan)" },
+    { label: "COMPLETED", value: stats.completed, color: "var(--green)" },
+    { label: "SUCCESS RATE", value: stats.rate, color: "var(--green)" },
+    { label: "BLOCK", value: "#" + stats.block.toLocaleString(), color: "var(--text)"Muted },
   ]
 
   return (
@@ -61,11 +61,11 @@ export default function NetworkStats() {
       {cards.map((card, i) => (
         <div key={card.label} style={{
           padding: "12px 14px",
-          border: `1px solid ${NT.border}`,
-          background: NT.surface,
+          border: "1px solid var(--border)",
+          background: "var(--surface)",
           gridColumn: i === 4 ? "1 / -1" : "auto",
         }}>
-          <p style={{ fontSize: 9, letterSpacing: "0.2em", color: NT.textMuted,
+          <p style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text)"Muted,
             textTransform: "uppercase", marginBottom: 6 }}>{card.label}</p>
           <p style={{
             color: loading ? NT.border : card.color,
