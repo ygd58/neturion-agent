@@ -3,6 +3,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { NT } from "@/lib/tokens"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { useState, useEffect } from "react"
 
 const NAV_ITEMS = [
@@ -40,6 +41,7 @@ export default function Nav() {
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: NT.green, animation: "pulse-dot 2s infinite", display: "inline-block" }} />
             {time}
           </div>
+          <ThemeToggle />
           <ConnectButton showBalance={false} />
           {/* Hamburger */}
           <button onClick={() => setMenuOpen(!menuOpen)} style={{

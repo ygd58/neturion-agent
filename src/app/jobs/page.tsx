@@ -97,7 +97,7 @@ export default function JobsPage() {
         </div>
         {loading ? (
           Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} style={{ height: 48, borderBottom: "1px solid " + NT.border }} />
+            <div key={i} style={{ height: 64, borderBottom: "1px solid " + NT.border }} />
           ))
         ) : filtered.map((j, i) => {
           const statusColors: Record<string, string> = { OPEN: NT.cyan, FUNDED: NT.green, COMPLETED: NT.text, SUBMITTED: NT.amber, CANCELLED: NT.danger }
@@ -105,15 +105,17 @@ export default function JobsPage() {
           return (
             <Link key={j.id + i} href={"/jobs/" + j.id} style={{
               display: "flex", borderBottom: "1px solid " + NT.border,
-              position: "relative", textDecoration: "none",
+              position: "relative", textDecoration: "none", flexDirection: "column",
             }}>
-              <span style={{ position: "absolute", left: 0, top: 8, bottom: 8, width: 2, background: c, opacity: 0.5 }} />
-              <TD w="90px" style={{ fontWeight: 700, color: NT.text }}>#{j.id}</TD>
-              <TD w="130px"><StatusPill status={j.status} /></TD>
-              <TD w="150px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: NT.textDim }}>{j.client}</TD>
-              <TD w="150px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: NT.textDim }}>{j.provider}</TD>
-              <TD w="120px" style={{ color: NT.textMuted }}>#{j.block}</TD>
-              <TD style={{ color: NT.textMuted, fontSize: 11 }}>{j.tx}</TD>
+              <div style={{ display: "flex" }}>
+                <span style={{ position: "absolute", left: 0, top: 8, bottom: 8, width: 2, background: c, opacity: 0.5 }} />
+                <TD w="90px" style={{ fontWeight: 700, color: NT.text }}>#{j.id}</TD>
+                <TD w="130px"><StatusPill status={j.status} /></TD>
+                <TD w="150px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: NT.textDim }}>{j.client}</TD>
+                <TD w="150px" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: NT.textDim }}>{j.provider}</TD>
+                <TD w="120px" style={{ color: NT.textMuted }}>#{j.block}</TD>
+                <TD style={{ color: NT.textMuted, fontSize: 11 }}>{j.tx}</TD>
+              </div>
             </Link>
           )
         })}
