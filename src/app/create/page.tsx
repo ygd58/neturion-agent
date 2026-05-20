@@ -4,6 +4,7 @@ import { useAccount, useWriteContract, usePublicClient } from "wagmi"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import PageShell from "@/components/PageShell"
 import AgentPicker from "@/components/AgentPicker"
+import Confetti from "@/components/Confetti"
 import { Panel } from "@/components/atoms"
 import { parseUSDC, CONTRACTS, COMMERCE_ABI, USDC_ABI } from "@/lib/arc"
 import { NT } from "@/lib/tokens"
@@ -24,6 +25,7 @@ export default function CreatePage() {
   const [form, setForm] = useState({ provider: "", description: "", budget: "1.0", days: "7" })
   const [status, setStatus] = useState<Status>("idle")
   const [jobId, setJobId] = useState("")
+  const [showConfetti, setShowConfetti] = useState(false)
   const [error, setError] = useState("")
   const [txHashes, setTxHashes] = useState<Record<string, string>>({})
 
@@ -59,6 +61,8 @@ export default function CreatePage() {
       setTxHashes(t => ({ ...t, funding: h4 }))
 
       setStatus("done")
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 3000)
     } catch (e: any) {
       setError(e.shortMessage ?? e.message ?? "TX FAILED"); setStatus("error")
     }
@@ -76,6 +80,7 @@ export default function CreatePage() {
 
   return (
     <PageShell>
+      <Confetti trigger={showConfetti} />
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 10, letterSpacing: "0.32em", color: NT.green }}>▸ ./commerce / new</div>
         <h1 style={{ margin: "6px 0 4px", fontFamily: "'Orbitron', monospace", fontSize: 28, fontWeight: 800, letterSpacing: "0.08em", color: NT.text, textTransform: "uppercase" }}>
