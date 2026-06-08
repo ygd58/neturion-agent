@@ -18,6 +18,7 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("ALL")
+  const [blockFilter, setBlockFilter] = useState("")
 
   useEffect(() => {
     if (!client) return
@@ -45,7 +46,11 @@ export default function JobsPage() {
   }, [client])
 
   const statusCounts = { ALL: jobs.length, OPEN: jobs.filter(j => j.status === "OPEN").length, FUNDED: jobs.filter(j => j.status === "FUNDED").length, COMPLETED: jobs.filter(j => j.status === "COMPLETED").length }
-  const filtered = filter === "ALL" ? jobs : jobs.filter(j => j.status === filter)
+  const filtered = jobs.filter(j => {
+    const statusMatch = filter === "ALL" || j.status === filter
+    const blockMatch = !blockFilter || j.block.includes(blockFilter)
+    return statusMatch && blockMatch
+  })
 
   return (
     <PageShell>
@@ -84,6 +89,22 @@ export default function JobsPage() {
           fontWeight: 700, letterSpacing: "0.14em", textDecoration: "none",
           display: "flex", alignItems: "center"
         }}>+ CREATE JOB</Link>
+      </div>
+
+      {/* Block search */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8,
+          background: "var(--surface)", border: "1px solid var(--border)", padding: "0 12px" }}>
+          <span style={{ color: "var(--green)", fontSize: 12 }}>⌕</span>
+          <input placeholder="Filter by block number..."
+            value={blockFilter} onChange={e => setBlockFilter(e.target.value)}
+            style={{ background: "transparent", border: "none", color: "var(--text)",
+              fontFamily: "'Space Mono', monospace", fontSize: 11, outline: "none",
+              flex: 1, padding: "10px 0" }} />
+          {blockFilter && <button onClick={() => setBlockFilter("")}
+            style={{ background: "transparent", border: "none",
+              color: "var(--text-muted)", cursor: "pointer", fontSize: 14 }}>×</button>}
+        </div>
       </div>
 
       <Panel accent={NT.cyan} style={{ display: "flex", flexDirection: "column" }}>

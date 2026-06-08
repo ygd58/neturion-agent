@@ -12,6 +12,8 @@ const NAV_ITEMS = [
   { path: "/jobs",     label: "JOBS" },
   { path: "/create",   label: "CREATE JOB" },
   { path: "/register", label: "REGISTER" },
+  { path: "/wallet",   label: "MY WALLET" },
+  { path: "/compare",  label: "COMPARE" },
 ]
 
 export default function Nav() {
@@ -42,6 +44,14 @@ export default function Nav() {
             {time}
           </div>
           <ThemeToggle />
+          <a href="https://faucet.circle.com" target="_blank" rel="noreferrer" style={{
+            padding: "6px 10px", fontSize: 9, letterSpacing: "0.12em", fontWeight: 700,
+            background: "var(--green-dim)", border: "1px solid var(--green)",
+            color: "var(--green)", textDecoration: "none", whiteSpace: "nowrap",
+            fontFamily: "'Space Mono', monospace",
+          }}>
+            FAUCET ↗
+          </a>
           <ConnectButton showBalance={false} />
           {/* Hamburger */}
           <button onClick={() => setMenuOpen(!menuOpen)} style={{
