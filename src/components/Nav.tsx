@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { path: "/register", label: "REGISTER" },
   { path: "/wallet",   label: "MY WALLET" },
   { path: "/compare",  label: "COMPARE" },
+  { path: "/jobboard", label: "JOB BOARD" },
 ]
 
 export default function Nav() {
