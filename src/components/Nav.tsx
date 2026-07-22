@@ -33,14 +33,11 @@ export default function Nav() {
     <nav style={{ background: NT.bg, borderBottom: `1px solid ${NT.border}`, position: "sticky", top: 0, zIndex: 100 }}>
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: `1px solid ${NT.border}88` }}>
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-          <img src="/neturion-logo.png" alt="Neturion" style={{ height: 36, width: 36, borderRadius: "50%", objectFit: "cover" }} />
-          <div>
-            <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 16, fontWeight: 900, letterSpacing: "0.15em", color: NT.green }}>
-              NETURION
-            </div>
-            <div style={{ fontSize: 8, letterSpacing: "0.2em", color: NT.textMuted }}>AGENT NETWORK // ARC TESTNET</div>
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <div style={{ fontFamily: "'Rajdhani', 'Orbitron', monospace", fontSize: 22, fontWeight: 700, letterSpacing: "0.2em", color: NT.green, textTransform: "uppercase" }}>
+            NETURION
           </div>
+          <div style={{ fontSize: 8, letterSpacing: "0.2em", color: NT.textMuted }}>AGENT NETWORK // ARC TESTNET</div>
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ fontSize: 8, letterSpacing: "0.1em", color: NT.textMuted, display: "flex", alignItems: "center", gap: 4 }}>
