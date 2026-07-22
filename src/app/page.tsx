@@ -10,6 +10,14 @@ import NetworkMesh from "@/components/NetworkMesh"
 import { NT } from "@/lib/tokens"
 
 export default function Dashboard() {
+  const router = useRouter()
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !sessionStorage.getItem("nt-intro-seen")) {
+      router.replace("/intro")
+    }
+  }, [router])
+
   return (
     <PageShell>
       <NetworkMesh />
