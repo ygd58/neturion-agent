@@ -34,12 +34,7 @@ export default function Nav() {
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: `1px solid ${NT.border}88` }}>
         <Link href="/" style={{ textDecoration: "none" }}>
-          <svg width="160" height="28" viewBox="0 0 160 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <text x="0" y="22" fontFamily="Orbitron, monospace" fontSize="20" fontWeight="900" 
-              letterSpacing="3" fill="var(--green)" style={{filter: "drop-shadow(0 0 6px var(--green))"}}>
-              NETURION
-            </text>
-          </svg>
+          <img src="/neturion-logo.png" alt="Neturion" style={{ height: 28, width: "auto" }} />
           <div style={{ fontSize: 8, letterSpacing: "0.2em", color: NT.textMuted }}>AGENT NETWORK // ARC TESTNET</div>
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
