@@ -1,4 +1,6 @@
 "use client"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import PageShell from "@/components/PageShell"
 import NetworkStats from "@/components/NetworkStats"
 import AgentList from "@/components/AgentList"
