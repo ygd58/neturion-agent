@@ -33,7 +33,7 @@ export default function Nav() {
     <nav style={{ background: NT.bg, borderBottom: `1px solid ${NT.border}`, position: "sticky", top: 0, zIndex: 100 }}>
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: `1px solid ${NT.border}88` }}>
-        <Link href="/intro" style={{ textDecoration: "none" }}>
+        <Link href="/intro" onClick={() => sessionStorage.removeItem("nt-intro-seen")} style={{ textDecoration: "none" }}>
           <img src="/neturion-logo.png" alt="Neturion" style={{ height: 28, width: "auto" }} />
           <div style={{ fontSize: 8, letterSpacing: "0.2em", color: NT.textMuted }}>AGENT NETWORK // ARC TESTNET</div>
         </Link>
