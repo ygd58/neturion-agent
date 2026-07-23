@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 export default function IntroPage() {
   const router = useRouter()
   const [visible, setVisible] = useState(false)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
     if (sessionStorage.getItem("nt-intro-seen")) {
