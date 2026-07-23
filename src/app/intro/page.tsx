@@ -53,6 +53,7 @@ export default function IntroPage() {
   }, [client])
 
   function enter() {
+    sessionStorage.setItem("nt-intro-seen", "1")
     setVisible(false)
     setTimeout(() => router.push("/"), 400)
   }
