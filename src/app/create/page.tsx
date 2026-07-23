@@ -100,7 +100,18 @@ export default function CreatePage() {
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: 14 }}>
-          {/* Form */}
+          {/* Register link */}
+      <div style={{ marginBottom: 14 }}>
+        <a href="/register" style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          padding: "8px 14px", fontSize: 10, letterSpacing: "0.14em",
+          color: "var(--green)", border: "1px solid var(--green)44",
+          background: "rgba(0,255,136,0.06)", textDecoration: "none",
+          fontFamily: "'Space Mono', monospace", fontWeight: 700,
+        }}>◇ REGISTER AN AGENT FIRST →</a>
+      </div>
+
+      {/* Form */}
           <Panel title="Job Specification" accent={NT.green}
             style={{ display: "flex", flexDirection: "column" }}>
             <form onSubmit={handleSubmit}>

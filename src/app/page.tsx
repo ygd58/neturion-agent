@@ -130,6 +130,23 @@ export default function Dashboard() {
         {/* Stats */}
         <NetworkStats />
 
+        {/* Quick links */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[
+            { href: "/leaderboard", label: "🏆 Agent Leaderboard", color: "var(--amber)" },
+            { href: "/jobboard", label: "📋 Job Board", color: "var(--cyan)" },
+            { href: "/compare", label: "⚖ Compare Agents", color: "var(--green)" },
+            { href: "/wallet", label: "💼 My Wallet", color: "var(--green)" },
+          ].map(l => (
+            <a key={l.href} href={l.href} style={{
+              padding: "8px 16px", fontSize: 11, letterSpacing: "0.1em",
+              color: l.color, border: "1px solid " + l.color + "44",
+              background: l.color + "0a", textDecoration: "none",
+              fontFamily: "'Space Mono', monospace", fontWeight: 700,
+            }}>{l.label}</a>
+          ))}
+        </div>
+
         {/* Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)",
           gap: 14, marginTop: 14 }}>

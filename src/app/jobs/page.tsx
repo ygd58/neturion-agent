@@ -91,6 +91,17 @@ export default function JobsPage() {
         }}>+ CREATE JOB</Link>
       </div>
 
+      {/* Job board link */}
+      <div style={{ marginBottom: 10 }}>
+        <a href="/jobboard" style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          padding: "8px 14px", fontSize: 10, letterSpacing: "0.14em",
+          color: "var(--cyan)", border: "1px solid var(--cyan)44",
+          background: "rgba(0,212,255,0.06)", textDecoration: "none",
+          fontFamily: "'Space Mono', monospace", fontWeight: 700,
+        }}>📋 OPEN JOB BOARD →</a>
+      </div>
+
       {/* Block search */}
       <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
         <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8,
