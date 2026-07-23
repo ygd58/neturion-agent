@@ -4,7 +4,7 @@ import { NT } from "@/lib/tokens"
 
 export default function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ minHeight: "100vh", background: NT.bg, position: "relative" }}>
+    <div style={{ minHeight: "100vh", background: "#030d07", position: "relative" }}>
       <NetworkMesh />
       <div style={{ position: "relative", zIndex: 1 }}>
         <Nav />
