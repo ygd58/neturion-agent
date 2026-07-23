@@ -31,7 +31,7 @@ export default function Nav() {
   }, [])
 
   return (
-    <nav style={{ background: NT.bg, borderBottom: `1px solid ${NT.border}`, position: "sticky", top: 0, zIndex: 100 }}>
+    <nav style={{ background: "#030d07", borderBottom: "2px solid #00ff88", position: "sticky", top: 0, zIndex: 100 }}>
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: `1px solid ${NT.border}88` }}>
         <Link href="/intro" onClick={() => sessionStorage.removeItem("nt-intro-seen")} style={{ textDecoration: "none" }}>
