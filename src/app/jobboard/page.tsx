@@ -19,18 +19,24 @@ export default function JobBoardPage() {
   const client = usePublicClient()
   const { writeContractAsync } = useWriteContract()
 
-  const [stats, setStats] = useState({ totalJobs: 0, totalAgents: 0 })
+  const [stats, setStats] = useState({ totalJobs: 0, totalAgents: 0, totalBids: 0 })
   const [jobs, setJobs] = useState<any[]>([])
-  const [myAgent, setMyAgent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState("jobs")
+  const [selectedJob, setSelectedJob] = useState<any>(null)
+  const [jobBids, setJobBids] = useState<any[]>([])
 
   // Post job form
-  const [form, setForm] = useState({ provider: "", description: "", budget: "1" })
+  const [form, setForm] = useState({ provider: "", description: "", budget: "1", days: "7" })
   const [posting, setPosting] = useState(false)
   const [posted, setPosted] = useState("")
 
-  // Register agent form
+  // Bid form
+  const [bidForm, setBidForm] = useState({ amount: "1", proposal: "" })
+  const [bidding, setBidding] = useState(false)
+  const [bidPosted, setBidPosted] = useState("")
+
+  // Register form
   const [agentForm, setAgentForm] = useState({ agentId: "", name: "", role: "worker" })
   const [registering, setRegistering] = useState(false)
 
@@ -38,13 +44,12 @@ export default function JobBoardPage() {
     if (!client) return
     async function load() {
       try {
-        const [totalJobs, totalAgents] = await (client as any).readContract({
+        const result = await (client as any).readContract({
           address: NETURION_JOB_BOARD, abi: JOB_BOARD_ABI, functionName: "getStats",
-        }) as [bigint, bigint]
-        setStats({ totalJobs: Number(totalJobs), totalAgents: Number(totalAgents) })
+        }) as [bigint, bigint, bigint]
+        setStats({ totalJobs: Number(result[0]), totalAgents: Number(result[1]), totalBids: Number(result[2]) })
 
-        // Load recent jobs
-        const count = Number(totalJobs)
+        const count = Number(result[0])
         const loaded = []
         for (let i = Math.max(1, count - 9); i <= count; i++) {
           try {
@@ -56,22 +61,30 @@ export default function JobBoardPage() {
           } catch {}
         }
         setJobs(loaded.reverse())
-
-        // Load my agent
-        if (address) {
-          try {
-            const agent = await (client as any).readContract({
-              address: NETURION_JOB_BOARD, abi: JOB_BOARD_ABI,
-              functionName: "getAgent", args: [address],
-            }) as any
-            if (agent.registered) setMyAgent(agent)
-          } catch {}
-        }
       } catch(e) { console.error(e) }
       setLoading(false)
     }
     load()
-  }, [client, address])
+  }, [client])
+
+  async function loadJobBids(jobId: number) {
+    if (!client) return
+    try {
+      const bidIds = await (client as any).readContract({
+        address: NETURION_JOB_BOARD, abi: JOB_BOARD_ABI,
+        functionName: "getJobBids", args: [BigInt(jobId)],
+      }) as bigint[]
+      const loaded = []
+      for (const bidId of bidIds) {
+        const bid = await (client as any).readContract({
+          address: NETURION_JOB_BOARD, abi: JOB_BOARD_ABI,
+          functionName: "getBid", args: [bidId],
+        }) as any
+        loaded.push({ ...bid, id: Number(bidId) })
+      }
+      setJobBids(loaded)
+    } catch(e) { console.error(e) }
+  }
 
   async function handlePostJob(e: React.FormEvent) {
     e.preventDefault()
@@ -81,14 +94,40 @@ export default function JobBoardPage() {
       const hash = await (writeContractAsync as any)({
         address: NETURION_JOB_BOARD, abi: JOB_BOARD_ABI,
         functionName: "postJob",
-        args: [form.provider || "0x0000000000000000000000000000000000000000", form.description, BigInt(form.budget)],
+        args: [form.provider || "0x0000000000000000000000000000000000000000", form.description, BigInt(form.budget), BigInt(form.days)],
       })
       setPosted(hash)
-      setForm({ provider: "", description: "", budget: "1" })
-    } catch(e: any) {
-      console.error(e)
-    }
+      setForm({ provider: "", description: "", budget: "1", days: "7" })
+    } catch(e: any) { console.error(e) }
     setPosting(false)
+  }
+
+  async function handleBid(e: React.FormEvent) {
+    e.preventDefault()
+    if (!address || !selectedJob) return
+    setBidding(true)
+    try {
+      const hash = await (writeContractAsync as any)({
+        address: NETURION_JOB_BOARD, abi: JOB_BOARD_ABI,
+        functionName: "submitBid",
+        args: [BigInt(selectedJob.id), BigInt(bidForm.amount), bidForm.proposal],
+      })
+      setBidPosted(hash)
+      setBidForm({ amount: "1", proposal: "" })
+      await loadJobBids(selectedJob.id)
+    } catch(e: any) { console.error(e) }
+    setBidding(false)
+  }
+
+  async function handleAcceptBid(bidId: number) {
+    if (!address) return
+    try {
+      await (writeContractAsync as any)({
+        address: NETURION_JOB_BOARD, abi: JOB_BOARD_ABI,
+        functionName: "acceptBid", args: [BigInt(bidId)],
+      })
+      await loadJobBids(selectedJob.id)
+    } catch(e: any) { console.error(e) }
   }
 
   async function handleRegister(e: React.FormEvent) {
@@ -100,7 +139,6 @@ export default function JobBoardPage() {
         functionName: "registerAgent",
         args: [BigInt(agentForm.agentId || "0"), agentForm.name, agentForm.role],
       })
-      setAgentForm({ agentId: "", name: "", role: "worker" })
     } catch(e: any) { console.error(e) }
     setRegistering(false)
   }
@@ -128,50 +166,30 @@ export default function JobBoardPage() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
-        <div style={{ padding: "12px 16px", border: "1px solid var(--border)", background: "var(--surface)" }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>TOTAL JOBS</div>
-          <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 24, fontWeight: 700, color: "var(--green)" }}>
-            {loading ? "..." : stats.totalJobs}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 16 }}>
+        {[
+          { label: "TOTAL JOBS", value: stats.totalJobs, color: "var(--green)" },
+          { label: "TOTAL BIDS", value: stats.totalBids, color: "var(--cyan)" },
+          { label: "AGENTS", value: stats.totalAgents, color: "var(--amber)" },
+        ].map(s => (
+          <div key={s.label} style={{ padding: "12px 16px", border: "1px solid var(--border)", background: "var(--surface)" }}>
+            <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>{s.label}</div>
+            <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 22, fontWeight: 700, color: s.color }}>
+              {loading ? "..." : s.value}
+            </div>
           </div>
-        </div>
-        <div style={{ padding: "12px 16px", border: "1px solid var(--border)", background: "var(--surface)" }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>REGISTERED AGENTS</div>
-          <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 24, fontWeight: 700, color: "var(--cyan)" }}>
-            {loading ? "..." : stats.totalAgents}
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* My Agent */}
-      {myAgent && (
-        <div style={{ padding: "12px 16px", marginBottom: 16,
-          border: "1px solid var(--green)", background: "rgba(0,255,136,0.04)" }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--green)", marginBottom: 6 }}>MY AGENT PROFILE</div>
-          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-            <div>
-              <span style={{ fontFamily: "'Orbitron', monospace", fontWeight: 700, color: "var(--text)" }}>
-                {myAgent.name}
-              </span>
-              <span style={{ fontSize: 9, marginLeft: 8, color: "var(--text-muted)" }}>{myAgent.role}</span>
-            </div>
-            <div style={{ display: "flex", gap: 16, fontSize: 11 }}>
-              <span style={{ color: "var(--text-muted)" }}>Jobs: <span style={{ color: "var(--text)" }}>{myAgent.jobsCompleted.toString()}</span></span>
-              <span style={{ color: "var(--text-muted)" }}>Earned: <span style={{ color: "var(--green)" }}>{myAgent.totalEarned.toString()} USDC</span></span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Tabs */}
-      <div style={{ display: "flex", borderBottom: "1px solid var(--border)", marginBottom: 16 }}>
-        {["jobs", "post job", "register agent"].map(t => (
+      <div style={{ display: "flex", borderBottom: "1px solid var(--border)", marginBottom: 16, overflowX: "auto" }}>
+        {["jobs", "post job", "submit bid", "register agent"].map(t => (
           <button key={t} onClick={() => setTab(t)} style={{
-            padding: "10px 16px", cursor: "pointer", background: "transparent",
+            padding: "10px 14px", cursor: "pointer", background: "transparent",
             border: "none", borderBottom: tab === t ? "2px solid var(--green)" : "2px solid transparent",
             color: tab === t ? "var(--green)" : "var(--text-muted)",
-            fontFamily: "'Space Mono', monospace", fontSize: 10, fontWeight: 700,
-            letterSpacing: "0.14em", textTransform: "uppercase",
+            fontFamily: "'Space Mono', monospace", fontSize: 9, fontWeight: 700,
+            letterSpacing: "0.12em", textTransform: "uppercase", whiteSpace: "nowrap",
           }}>{t}</button>
         ))}
       </div>
@@ -190,39 +208,85 @@ export default function JobBoardPage() {
           ) : jobs.map((job, i) => {
             const statusLabel = STATUS[job.status] ?? "Unknown"
             const statusColor = STATUS_COLORS[statusLabel] ?? "var(--text-muted)"
+            const isSelected = selectedJob?.id === job.id
             return (
-              <div key={i} style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)",
-                position: "relative" }}>
-                <span style={{ position: "absolute", left: 0, top: 8, bottom: 8,
-                  width: 2, background: statusColor }} />
-                <div style={{ display: "flex", justifyContent: "space-between",
-                  alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontWeight: 700, color: "var(--text)", fontSize: 13 }}>
-                        #{job.id}
-                      </span>
-                      <span style={{ fontSize: 9, padding: "1px 6px",
-                        background: statusColor + "14", color: statusColor,
-                        border: "1px solid " + statusColor + "44", letterSpacing: "0.1em" }}>
-                        {statusLabel.toUpperCase()}
-                      </span>
+              <div key={i}>
+                <div onClick={() => {
+                  setSelectedJob(isSelected ? null : job)
+                  if (!isSelected) loadJobBids(job.id)
+                }} style={{
+                  padding: "12px 16px", borderBottom: "1px solid var(--border)",
+                  position: "relative", cursor: "pointer",
+                  background: isSelected ? "rgba(0,255,136,0.04)" : "transparent",
+                }}>
+                  <span style={{ position: "absolute", left: 0, top: 8, bottom: 8,
+                    width: 2, background: statusColor }} />
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <span style={{ fontWeight: 700, color: "var(--text)", fontSize: 13 }}>#{job.id}</span>
+                        <span style={{ fontSize: 9, padding: "1px 6px",
+                          background: statusColor + "14", color: statusColor,
+                          border: "1px solid " + statusColor + "44" }}>
+                          {statusLabel.toUpperCase()}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 11, color: "var(--text-dim)", margin: 0, lineHeight: 1.5 }}>
+                        {job.description?.slice(0, 80)}{job.description?.length > 80 ? "..." : ""}
+                      </p>
+                      <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 4, fontFamily: "'Space Mono', monospace" }}>
+                        Client: {job.client?.slice(0,10)}...
+                      </div>
                     </div>
-                    <p style={{ fontSize: 11, color: "var(--text-dim)", margin: 0, lineHeight: 1.5 }}>
-                      {job.description?.slice(0, 80)}{job.description?.length > 80 ? "..." : ""}
-                    </p>
-                    <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 4,
-                      fontFamily: "'Space Mono', monospace" }}>
-                      Client: {job.client?.slice(0,10)}...
-                    </div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 16,
-                      fontWeight: 700, color: "var(--green)" }}>
-                      {job.budget?.toString()} USDC
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 16, fontWeight: 700, color: "var(--green)" }}>
+                        {job.budget?.toString()} USDC
+                      </div>
+                      <div style={{ fontSize: 9, color: "var(--text-muted)" }}>
+                        {isSelected ? "▲ HIDE" : "▼ BIDS"}
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Bid list for selected job */}
+                {isSelected && (
+                  <div style={{ background: "var(--surface2)", padding: "12px 16px",
+                    borderBottom: "1px solid var(--border)" }}>
+                    <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)",
+                      marginBottom: 10 }}>BIDS ({jobBids.length})</div>
+                    {jobBids.length === 0 ? (
+                      <div style={{ color: "var(--text-muted)", fontSize: 11, marginBottom: 8 }}>
+                        No bids yet.
+                      </div>
+                    ) : jobBids.map((bid, bi) => (
+                      <div key={bi} style={{ padding: "10px 12px", marginBottom: 6,
+                        border: "1px solid var(--border)", background: "var(--surface)",
+                        display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text)", marginBottom: 3 }}>
+                            {bid.bidder?.slice(0,10)}...
+                            {bid.accepted && <span style={{ marginLeft: 6, fontSize: 9, color: "var(--green)" }}>✓ ACCEPTED</span>}
+                          </div>
+                          <div style={{ fontSize: 11, color: "var(--text-dim)" }}>{bid.proposal?.slice(0, 60)}</div>
+                        </div>
+                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 14,
+                            fontWeight: 700, color: "var(--cyan)" }}>{bid.amount?.toString()} USDC</div>
+                          {isConnected && address?.toLowerCase() === job.client?.toLowerCase() && 
+                           job.status === 0 && !bid.accepted && (
+                            <button onClick={() => handleAcceptBid(bid.id)} style={{
+                              marginTop: 6, padding: "4px 10px", cursor: "pointer",
+                              background: "rgba(0,255,136,0.1)", border: "1px solid var(--green)",
+                              color: "var(--green)", fontFamily: "'Space Mono', monospace",
+                              fontSize: 9, fontWeight: 700, letterSpacing: "0.1em",
+                            }}>ACCEPT</button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )
           })}
@@ -241,22 +305,27 @@ export default function JobBoardPage() {
             <form onSubmit={handlePostJob}>
               <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
                 <div>
-                  <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ PROVIDER ADDRESS (optional)</div>
-                  <input type="text" placeholder="0x... (leave empty for open bid)"
-                    value={form.provider} onChange={e => setForm(f => ({...f, provider: e.target.value}))}
-                    style={inputStyle} />
+                  <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ PROVIDER ADDRESS (optional — leave empty for open bids)</div>
+                  <input type="text" placeholder="0x..." value={form.provider}
+                    onChange={e => setForm(f => ({...f, provider: e.target.value}))} style={inputStyle} />
                 </div>
                 <div>
                   <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ DESCRIPTION</div>
-                  <textarea placeholder="Describe the task..." required
-                    value={form.description} onChange={e => setForm(f => ({...f, description: e.target.value}))}
+                  <textarea placeholder="Describe the task..." required value={form.description}
+                    onChange={e => setForm(f => ({...f, description: e.target.value}))}
                     style={{ ...inputStyle, height: 80, resize: "none" }} />
                 </div>
-                <div>
-                  <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ BUDGET (USDC)</div>
-                  <input type="number" min="1" required
-                    value={form.budget} onChange={e => setForm(f => ({...f, budget: e.target.value}))}
-                    style={inputStyle} />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ BUDGET (USDC)</div>
+                    <input type="number" min="1" required value={form.budget}
+                      onChange={e => setForm(f => ({...f, budget: e.target.value}))} style={inputStyle} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ DURATION (DAYS)</div>
+                    <input type="number" min="1" value={form.days}
+                      onChange={e => setForm(f => ({...f, days: e.target.value}))} style={inputStyle} />
+                  </div>
                 </div>
                 {posted && (
                   <div style={{ padding: "10px 12px", background: "rgba(0,255,136,0.06)",
@@ -277,6 +346,81 @@ export default function JobBoardPage() {
         )
       )}
 
+      {/* Submit Bid */}
+      {tab === "submit bid" && (
+        !isConnected ? (
+          <div style={{ padding: 40, textAlign: "center" }}>
+            <p style={{ color: "var(--text-muted)", fontSize: 11, marginBottom: 16 }}>Connect wallet to submit bids</p>
+            <ConnectButton />
+          </div>
+        ) : (
+          <Panel title="Submit a Bid" accent="var(--cyan)">
+            <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+              {/* Job selector */}
+              <div>
+                <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 8 }}>▸ SELECT OPEN JOB</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 200, overflow: "auto" }}>
+                  {jobs.filter(j => j.status === 0).map(job => (
+                    <div key={job.id} onClick={() => setSelectedJob(selectedJob?.id === job.id ? null : job)}
+                      style={{
+                        padding: "10px 12px", cursor: "pointer",
+                        background: selectedJob?.id === job.id ? "rgba(0,212,255,0.1)" : "var(--surface2)",
+                        border: `1px solid ${selectedJob?.id === job.id ? "var(--cyan)" : "var(--border)"}`,
+                      }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ fontWeight: 700, color: "var(--text)", fontSize: 12 }}>#{job.id}</span>
+                        <span style={{ fontFamily: "'Orbitron', monospace", color: "var(--green)", fontSize: 12 }}>
+                          {job.budget?.toString()} USDC
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 10, color: "var(--text-dim)", marginTop: 3 }}>
+                        {job.description?.slice(0, 50)}...
+                      </div>
+                    </div>
+                  ))}
+                  {jobs.filter(j => j.status === 0).length === 0 && (
+                    <div style={{ color: "var(--text-muted)", fontSize: 11 }}>No open jobs available</div>
+                  )}
+                </div>
+              </div>
+
+              {selectedJob && (
+                <form onSubmit={handleBid} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ padding: "10px 12px", background: "rgba(0,212,255,0.05)",
+                    border: "1px solid var(--cyan)", fontSize: 10, color: "var(--cyan)" }}>
+                    Bidding on Job #{selectedJob.id} · Budget: {selectedJob.budget?.toString()} USDC
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ YOUR BID (USDC)</div>
+                    <input type="number" min="1" required value={bidForm.amount}
+                      onChange={e => setBidForm(f => ({...f, amount: e.target.value}))} style={inputStyle} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-muted)", marginBottom: 6 }}>▸ PROPOSAL</div>
+                    <textarea placeholder="Describe your approach..." required value={bidForm.proposal}
+                      onChange={e => setBidForm(f => ({...f, proposal: e.target.value}))}
+                      style={{ ...inputStyle, height: 80, resize: "none" }} />
+                  </div>
+                  {bidPosted && (
+                    <div style={{ padding: "10px 12px", background: "rgba(0,212,255,0.06)",
+                      border: "1px solid var(--cyan)", color: "var(--cyan)", fontSize: 10 }}>
+                      ✓ Bid submitted! TX: {bidPosted.slice(0,20)}...
+                    </div>
+                  )}
+                  <button type="submit" disabled={bidding} style={{
+                    padding: 12, background: "rgba(0,212,255,0.1)", border: "1px solid var(--cyan)",
+                    color: "var(--cyan)", fontFamily: "'Space Mono', monospace",
+                    fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", cursor: "pointer",
+                  }}>
+                    {bidding ? "SUBMITTING..." : "▸ SUBMIT BID ONCHAIN"}
+                  </button>
+                </form>
+              )}
+            </div>
+          </Panel>
+        )
+      )}
+
       {/* Register Agent */}
       {tab === "register agent" && (
         !isConnected ? (
@@ -285,7 +429,7 @@ export default function JobBoardPage() {
             <ConnectButton />
           </div>
         ) : (
-          <Panel title="Register Agent Profile" accent="var(--cyan)">
+          <Panel title="Register Agent Profile" accent="var(--amber)">
             <form onSubmit={handleRegister}>
               <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
                 <div>
@@ -306,9 +450,9 @@ export default function JobBoardPage() {
                     {["worker", "orchestrator", "evaluator"].map(r => (
                       <button key={r} type="button" onClick={() => setAgentForm(f => ({...f, role: r}))} style={{
                         flex: 1, padding: "10px 8px", cursor: "pointer",
-                        background: agentForm.role === r ? "rgba(0,255,136,0.1)" : "var(--surface2)",
-                        border: "1px solid " + (agentForm.role === r ? "var(--green)" : "var(--border)"),
-                        color: agentForm.role === r ? "var(--green)" : "var(--text-muted)",
+                        background: agentForm.role === r ? "rgba(255,181,71,0.1)" : "var(--surface2)",
+                        border: "1px solid " + (agentForm.role === r ? "var(--amber)" : "var(--border)"),
+                        color: agentForm.role === r ? "var(--amber)" : "var(--text-muted)",
                         fontFamily: "'Space Mono', monospace", fontSize: 9, fontWeight: 700,
                         letterSpacing: "0.1em", textTransform: "uppercase",
                       }}>{r}</button>
@@ -316,8 +460,8 @@ export default function JobBoardPage() {
                   </div>
                 </div>
                 <button type="submit" disabled={registering} style={{
-                  padding: 12, background: "rgba(0,212,255,0.1)", border: "1px solid var(--cyan)",
-                  color: "var(--cyan)", fontFamily: "'Space Mono', monospace",
+                  padding: 12, background: "rgba(255,181,71,0.1)", border: "1px solid var(--amber)",
+                  color: "var(--amber)", fontFamily: "'Space Mono', monospace",
                   fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", cursor: "pointer",
                 }}>
                   {registering ? "REGISTERING..." : "▸ REGISTER AGENT"}
