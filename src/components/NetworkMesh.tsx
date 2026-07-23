@@ -16,7 +16,7 @@ export default function NetworkMesh() {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice"
       style={{ position: "fixed", inset: 0, width: "100vw", height: "100vh",
-        opacity: 0.4, pointerEvents: "none", zIndex: 0, mixBlendMode: "screen" }}>
+        opacity: 0.25, pointerEvents: "none", zIndex: 0, mixBlendMode: "screen" }}>
       <defs>
         <radialGradient id="meshGlow" cx="70%" cy="40%" r="70%">
           <stop offset="0%" stopColor={NT.cyan} stopOpacity="0.18" />
