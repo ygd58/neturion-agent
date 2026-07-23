@@ -26,22 +26,22 @@
 
 /* Light mode */
 [data-theme="light"] {
-  --bg:         #f4f7f4;
-  --surface:    #ffffff;
-  --surface2:   #edf2ed;
-  --surface3:   #e4ece4;
-  --border:     #c0d4c0;
-  --border-hi:  #a0c0a0;
-  --text:       #0a180a;
-  --text-dim:   #2a4a2a;
-  --text-muted: #4a6a4a;
-  --green:      #006633;
-  --green-dim:  #cceecc;
-  --cyan:       #004488;
-  --cyan-dim:   #cce0ff;
-  --amber:      #774400;
-  --amber-dim:  #ffeecc;
-  --danger:     #aa1133;
+  --bg:         #0a1a0d;
+  --surface:    #0d2010;
+  --surface2:   #102814;
+  --surface3:   #143018;
+  --border:     #1a4020;
+  --border-hi:  #245530;
+  --text:       #d0f0d8;
+  --text-dim:   #90c0a0;
+  --text-muted: #508060;
+  --green:      #00ff88;
+  --green-dim:  #0a6b3f;
+  --cyan:       #00d4ff;
+  --cyan-dim:   #0a5d7a;
+  --amber:      #ffb547;
+  --amber-dim:  #6b4818;
+  --danger:     #ff3b6b;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
