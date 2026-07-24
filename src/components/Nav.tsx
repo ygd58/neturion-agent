@@ -88,7 +88,7 @@ export default function Nav() {
       {/* Mobile menu */}
       {menuOpen && (
         <div style={{ background: NT.surface, borderTop: `1px solid ${NT.border}`, padding: 8 }}>
-          {NAV_ITEMS.map(item => {
+          {[...NAV_ITEMS, ...MORE_ITEMS].map(item => {
             const active = pathname === item.path
             return (
               <Link key={item.path} href={item.path} onClick={() => setMenuOpen(false)} style={{

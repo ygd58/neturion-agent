@@ -57,7 +57,8 @@ export default function AgentList() {
               const rep = await (client as any).readContract({ address: CONTRACTS.REPUTATION_REGISTRY, abi: REPUTATION_ABI, functionName: "getReputation", args: [tokenId] }) as [bigint, bigint]
               repScore = Number(rep[0]); repCount = Number(rep[1])
             } catch {}
-            loaded.push({ id: tokenId, owner: owner as string, name: meta.name ?? "UNKNOWN", role: meta.role ?? "worker", capabilities: meta.capabilities ?? [], repScore, repCount })
+            if (!meta.name) continue  // metadata yüklenmediyse atla
+          loaded.push({ id: tokenId, owner: owner as string, name: meta.name, role: meta.role ?? "worker", capabilities: meta.capabilities ?? [], repScore, repCount })
           } catch {}
         }
         setAgents(loaded.reverse())
