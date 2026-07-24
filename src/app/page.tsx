@@ -75,18 +75,17 @@ export default function Dashboard() {
           {/* Feature pills */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
             {[
-              { icon: "◇", label: "ERC-8004 Identity", color: NT.green },
-              { icon: "⬡", label: "ERC-8183 Escrow", color: NT.cyan },
-              { icon: "◈", label: "USDC Native Gas", color: NT.amber },
-              { icon: "⟳", label: "Sub-second Finality", color: NT.green },
-            ].map(f => (
-              <span key={f.label} style={{
+              "ERC-8004 Identity",
+              "ERC-8183 Escrow",
+              "USDC Native Gas",
+              "Sub-second Finality",
+            ].map(label => (
+              <span key={label} style={{
                 padding: "4px 10px", fontSize: 10, letterSpacing: "0.1em",
-                color: f.color, border: `1px solid ${f.color}33`,
-                background: `${f.color}08`,
-                display: "flex", alignItems: "center", gap: 5
+                color: "var(--green)", border: "1px solid rgba(0,255,136,0.2)",
+                background: "rgba(0,255,136,0.05)",
               }}>
-                <span>{f.icon}</span> {f.label}
+                {label}
               </span>
             ))}
           </div>
