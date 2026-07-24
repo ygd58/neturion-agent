@@ -23,18 +23,17 @@ export default function Dashboard() {
       <NetworkMesh />
       <div style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.32em",
-            color: NT.green, textTransform: "uppercase" }}>
-            ▸ ./root / dashboard
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%",
+              background: "var(--green)", animation: "pulse-dot 2s infinite",
+              display: "inline-block" }} />
+            <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--green)" }}>
+              LIVE · ARC TESTNET 5042002
+            </span>
           </div>
-          <h1 style={{ margin: "6px 0 4px", fontFamily: "'Orbitron', monospace",
-            fontSize: 28, fontWeight: 800, letterSpacing: "0.08em",
-            color: NT.text, textTransform: "uppercase" }}>
-            Network <span style={{ color: NT.green }}>Telemetry</span>
-          </h1>
-          <div style={{ fontSize: 11, letterSpacing: "0.12em", color: NT.textDim }}>
-            Live ERC-8004 / ERC-8183 onchain feed · Arc Testnet 5042002
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4, letterSpacing: "0.06em" }}>
+            ERC-8004 identity · ERC-8183 commerce · USDC native gas
           </div>
         </div>
 
