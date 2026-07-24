@@ -414,7 +414,7 @@ export default function EscrowPage() {
         )
       )}
       <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
-        <a href="https://raw.githubusercontent.com/ygd58/neturion-contracts/main/neturion-whitepaper.pdf"
+        <a href="/neturion-whitepaper.pdf"
           target="_blank" rel="noreferrer" style={{
             padding: "8px 16px", background: "transparent",
             border: "1px solid var(--border)", color: "var(--text-muted)",
