@@ -137,6 +137,7 @@ export default function Dashboard() {
             { href: "/jobboard", label: "📋 Job Board", color: "var(--cyan)" },
             { href: "/compare", label: "⚖ Compare Agents", color: "var(--green)" },
             { href: "/wallet", label: "💼 My Wallet", color: "var(--green)" },
+            { href: "/escrow", label: "🔒 USDC Escrow", color: "var(--amber)" },
           ].map(l => (
             <a key={l.href} href={l.href} style={{
               padding: "8px 16px", fontSize: 11, letterSpacing: "0.1em",

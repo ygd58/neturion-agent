@@ -1,0 +1,80 @@
+// NeturionEscrow Contract - Real USDC Escrow on Arc Testnet
+export const NETURION_ESCROW = "0xc095de6027abe0a315569761fe9b8822b36247bc" as `0x\${string}`
+
+export const ESCROW_ABI = [
+  { name: "createAndFund", type: "function", stateMutability: "nonpayable",
+    inputs: [
+      { name: "provider", type: "address" },
+      { name: "evaluator", type: "address" },
+      { name: "description", type: "string" },
+      { name: "amount", type: "uint256" },
+      { name: "durationDays", type: "uint256" },
+    ], outputs: [{ name: "", type: "uint256" }] },
+  { name: "submitDelivery", type: "function", stateMutability: "nonpayable",
+    inputs: [
+      { name: "jobId", type: "uint256" },
+      { name: "deliveryHash", type: "bytes32" },
+    ], outputs: [] },
+  { name: "approveDelivery", type: "function", stateMutability: "nonpayable",
+    inputs: [{ name: "jobId", type: "uint256" }], outputs: [] },
+  { name: "cancelJob", type: "function", stateMutability: "nonpayable",
+    inputs: [{ name: "jobId", type: "uint256" }], outputs: [] },
+  { name: "disputeJob", type: "function", stateMutability: "nonpayable",
+    inputs: [{ name: "jobId", type: "uint256" }], outputs: [] },
+  { name: "getJob", type: "function", stateMutability: "view",
+    inputs: [{ name: "jobId", type: "uint256" }],
+    outputs: [{ name: "", type: "tuple", components: [
+      { name: "id", type: "uint256" },
+      { name: "client", type: "address" },
+      { name: "provider", type: "address" },
+      { name: "evaluator", type: "address" },
+      { name: "amount", type: "uint256" },
+      { name: "platformFee", type: "uint256" },
+      { name: "createdAt", type: "uint256" },
+      { name: "deadline", type: "uint256" },
+      { name: "description", type: "string" },
+      { name: "status", type: "uint8" },
+      { name: "deliveryHash", type: "bytes32" },
+    ]}] },
+  { name: "getEscrowBalance", type: "function", stateMutability: "view",
+    inputs: [], outputs: [{ name: "", type: "uint256" }] },
+  { name: "getClientJobs", type: "function", stateMutability: "view",
+    inputs: [{ name: "client", type: "address" }],
+    outputs: [{ name: "", type: "uint256[]" }] },
+  { name: "getProviderJobs", type: "function", stateMutability: "view",
+    inputs: [{ name: "provider", type: "address" }],
+    outputs: [{ name: "", type: "uint256[]" }] },
+  { name: "jobCount", type: "function", stateMutability: "view",
+    inputs: [], outputs: [{ name: "", type: "uint256" }] },
+  { name: "PLATFORM_FEE", type: "function", stateMutability: "view",
+    inputs: [], outputs: [{ name: "", type: "uint256" }] },
+  { name: "JobCreated", type: "event",
+    inputs: [
+      { name: "jobId", type: "uint256", indexed: true },
+      { name: "client", type: "address", indexed: true },
+      { name: "provider", type: "address", indexed: true },
+      { name: "amount", type: "uint256", indexed: false },
+    ] },
+  { name: "JobCompleted", type: "event",
+    inputs: [
+      { name: "jobId", type: "uint256", indexed: true },
+      { name: "provider", type: "address", indexed: true },
+      { name: "paid", type: "uint256", indexed: false },
+    ] },
+  { name: "JobCancelled", type: "event",
+    inputs: [
+      { name: "jobId", type: "uint256", indexed: true },
+      { name: "client", type: "address", indexed: true },
+      { name: "refund", type: "uint256", indexed: false },
+    ] },
+] as const
+
+export const ESCROW_STATUS = ["Open", "Funded", "Submitted", "Completed", "Cancelled", "Disputed"]
+export const ESCROW_STATUS_COLORS: Record<string, string> = {
+  Open: "var(--text-muted)",
+  Funded: "var(--cyan)",
+  Submitted: "var(--amber)",
+  Completed: "var(--green)",
+  Cancelled: "var(--danger)",
+  Disputed: "var(--danger)",
+}
