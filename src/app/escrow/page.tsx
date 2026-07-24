@@ -413,6 +413,15 @@ export default function EscrowPage() {
           </div>
         )
       )}
+      <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
+        <a href="https://github.com/ygd58/neturion-contracts/raw/main/neturion-whitepaper.pdf"
+          target="_blank" rel="noreferrer" style={{
+            padding: "8px 16px", background: "transparent",
+            border: "1px solid var(--border)", color: "var(--text-muted)",
+            fontFamily: "'Space Mono', monospace", fontSize: 10,
+            letterSpacing: "0.14em", textDecoration: "none",
+          }}>📄 WHITEPAPER ↗</a>
+      </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </PageShell>
   )
